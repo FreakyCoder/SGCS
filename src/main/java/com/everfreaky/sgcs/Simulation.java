@@ -62,9 +62,6 @@ public class Simulation {
     }
     public void draw() {
         ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (Pheromone p : bots[0].getPheromones()) {
-            p.draw(ctx);
-        }
         for (Bot bot : bots) {
             if (bot != null) {
                 bot.draw(ctx);
