@@ -15,10 +15,12 @@ public class Simulation {
     private double failureChance;
     private Bot[] bots;
     private final Random rand;
+    private long loopTime;
     public Simulation(double width, double height) {
         this.canvas = new Canvas(width, height);
         canvas.setStyle("-fx-border-color: black");
         this.ctx = this.canvas.getGraphicsContext2D();
+        this.loopTime = 0;
         this.rand = new Random(System.nanoTime());
     }
 
@@ -45,11 +47,17 @@ public class Simulation {
     }
     public void update(long timeStep) {
         timeStep *= 0.000001;
+        loopTime += timeStep;
         for (int i = 0; i < bots.length; ++i) {
-            if (rand.nextDouble() < failureChance) {
-                bots[i] = null;
-            }
             if (bots[i] != null) {
+                if (loopTime >= 1000) {
+                    double chance = rand.nextDouble();
+                    if (chance < failureChance) {
+                        System.out.printf("%d: %f\n", i, chance);
+                        bots[i] = null;
+                        continue;
+                    }
+                }
                 bots[i].move(timeStep);
                 for (int j = 0; j < i; ++j) {
                     if (bots[j] != null && dist(bots[i], bots[j]) <= commRange) {
@@ -59,6 +67,7 @@ public class Simulation {
                 }
             }
         }
+        loopTime %= 1000;
     }
     public void draw() {
         ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
