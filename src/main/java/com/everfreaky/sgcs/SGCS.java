@@ -12,14 +12,13 @@ import java.io.IOException;
 
 public class SGCS extends Application {
     @Override
-    public void start(final Stage stage) throws IOException {
+    public void start(final Stage stage) {
         final Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         stage.setX(screenBounds.getMinX());
         stage.setY(screenBounds.getMinY());
         Pane root = new Pane();
-        Simulation simulation = new Simulation(screenBounds.getWidth() / 2, screenBounds.getHeight());
-        Loop loop = new Loop(simulation);
-        SimulationControl parameters = new SimulationControl(screenBounds.getWidth() / 2, 0, screenBounds.getWidth() / 2, screenBounds.getHeight(), simulation, loop);
+        Simulation simulation = Simulation.getInstance();
+        SimulationControl parameters = SimulationControl.getInstance();
         Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         root.getChildren().add(simulation.getCanvas());
         root.getChildren().add(parameters);

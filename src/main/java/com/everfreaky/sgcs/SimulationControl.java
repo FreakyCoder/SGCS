@@ -1,20 +1,17 @@
 package com.everfreaky.sgcs;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 
 public class SimulationControl extends VBox {
-    private final Simulation sim;
-    private final Loop loop;
     private final Label parameterTitle;
     private final Button startButton;
     private final Label countLabel;
@@ -28,15 +25,15 @@ public class SimulationControl extends VBox {
     private final Label simulationParameters;
     private final Button pausePlayButton;
     private boolean isHome = true;
-    public SimulationControl(double x, double y, double width, double height, Simulation sim, Loop loop) {
-        this.sim = sim;
-        this.loop = loop;
+    public static final SimulationControl instance = new SimulationControl(Screen.getPrimary().getBounds().getWidth() / 2, 0, Screen.getPrimary().getBounds().getWidth() / 2, Screen.getPrimary().getBounds().getHeight());
+    private SimulationControl(double x, double y, double width, double height) {
         this.setLayoutX(x);
         this.setLayoutY(y);
         this.setPrefSize(width, height);
         this.setStyle("-fx-border-color: black");
         this.setAlignment(Pos.CENTER);
         this.setSpacing(height / 100);
+        Loop loop = Loop.getInstance();
         parameterTitle = new Label("SGCS Simulation Parameters");
         parameterTitle.setFont(new Font("Arial", 48));
         countLabel = new Label("Robot count(1-1000): ");
@@ -44,24 +41,17 @@ public class SimulationControl extends VBox {
         countField = new TextField();
         countField.setMaxWidth(600);
         countField.setText("1");
-        countField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                if (!newValue.matches("^([0-9]{0,3}|1000)$")) {
-                    Platform.runLater(() -> {
-                        countField.setText(oldValue);
-                        countField.positionCaret(countField.getLength());
-                    });
-                }
+        countField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("^([0-9]{0,3}|1000)$")) {
+                Platform.runLater(() -> {
+                    countField.setText(oldValue);
+                    countField.positionCaret(countField.getLength());
+                });
             }
         });
-        countField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
-                if (!newPropertyValue && !countField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
-                    countField.setText("1");
-                }
+        countField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue && !countField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
+                countField.setText("1");
             }
         });
         commRangeLabel = new Label("Communication range(1-100): ");
@@ -69,24 +59,17 @@ public class SimulationControl extends VBox {
         commRangeField = new TextField();
         commRangeField.setMaxWidth(600);
         commRangeField.setText("1");
-        commRangeField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                if (!newValue.matches("^([0-9]{0,2}|100)$")) {
-                    Platform.runLater(() -> {
-                       commRangeField.setText(oldValue);
-                       commRangeField.positionCaret(commRangeField.getLength());
-                    });
-                }
+        commRangeField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("^([0-9]{0,2}|100)$")) {
+                Platform.runLater(() -> {
+                    commRangeField.setText(oldValue);
+                    commRangeField.positionCaret(commRangeField.getLength());
+                });
             }
         });
-        commRangeField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
-                if (!newPropertyValue && !commRangeField.getText().matches("^([1-9][0-9]?|100)$")) {
-                    commRangeField.setText("1");
-                }
+        commRangeField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue && !commRangeField.getText().matches("^([1-9][0-9]?|100)$")) {
+                commRangeField.setText("1");
             }
         });
         failureChanceLabel = new Label("Failure chance(0 - 1): ");
@@ -94,35 +77,23 @@ public class SimulationControl extends VBox {
         failureChanceField = new TextField();
         failureChanceField.setMaxWidth(600);
         failureChanceField.setText("0");
-        failureChanceField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                if (!newValue.matches("^((0([.,][0-9]{0,15})?)?)|1$")) {
-                    Platform.runLater(() -> {
-                        failureChanceField.setText(oldValue);
-                        failureChanceField.positionCaret(failureChanceField.getLength());
-                    });
-                }
+        failureChanceField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("^((0([.,][0-9]{0,15})?)?)|1$")) {
+                Platform.runLater(() -> {
+                    failureChanceField.setText(oldValue);
+                    failureChanceField.positionCaret(failureChanceField.getLength());
+                });
             }
         });
-        failureChanceField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
-                if (!newPropertyValue && !failureChanceField.getText().matches("^(0[,.][0-9]{0,15})|1$")) {
-                    failureChanceField.setText("0");
-                }
+        failureChanceField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue && !failureChanceField.getText().matches("^(0[,.][0-9]{0,15})|1$")) {
+                failureChanceField.setText("0");
             }
         });
         startButton = new Button("Start Simulation");
         startButton.setFont(new Font("Arial", 36));
         startButton.setDefaultButton(true);
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                startSimulation();
-            }
-        });
+        startButton.setOnAction((ActionEvent e) -> startSimulation());
         setScene();
         simulationTitle = new Label("SGCS Simulation");
         simulationTitle.setFont(new Font("Arial", 48));
@@ -133,20 +104,22 @@ public class SimulationControl extends VBox {
         pausePlayButton = new Button("Pause");
         pausePlayButton.setFont(new Font("Arial", 36));
         pausePlayButton.setDefaultButton(true);
-        pausePlayButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (loop.isPlaying()) {
-                    loop.pause();
-                    pausePlayButton.setText("Play");
-                } else {
-                    loop.play();
-                    pausePlayButton.setText("Pause");
-                }
+        pausePlayButton.setOnAction((ActionEvent e) -> {
+            if (loop.isPlaying()) {
+                loop.pause();
+                pausePlayButton.setText("Play");
+            } else {
+                loop.play();
+                pausePlayButton.setText("Pause");
             }
         });
     }
+    public static SimulationControl getInstance() {
+        return instance;
+    }
     private void startSimulation() {
+        Loop loop = Loop.getInstance();
+        Simulation sim = Simulation.getInstance();
         this.isHome = false;
         if (!countField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
             countField.setText("1");
@@ -157,12 +130,13 @@ public class SimulationControl extends VBox {
         if (!failureChanceField.getText().matches("^(0[,.][0-9]{0,15})|1$")) {
             failureChanceField.setText("0");
         }
-        this.sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()));
+        sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()));
         loop.start();
         loop.play();
         setScene();
     }
     private void setScene() {
+        Simulation sim = Simulation.getInstance();
         this.getChildren().clear();
         if (this.isHome) {
             this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, startButton);

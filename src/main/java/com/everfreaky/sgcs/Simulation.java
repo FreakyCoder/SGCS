@@ -2,6 +2,7 @@ package com.everfreaky.sgcs;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.stage.Screen;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -16,12 +17,16 @@ public class Simulation {
     private Bot[] bots;
     private final Random rand;
     private long loopTime;
-    public Simulation(double width, double height) {
+    private static final Simulation instance = new Simulation(Screen.getPrimary().getBounds().getWidth() / 2, Screen.getPrimary().getBounds().getHeight());
+    private Simulation(double width, double height) {
         this.canvas = new Canvas(width, height);
         canvas.setStyle("-fx-border-color: black");
         this.ctx = this.canvas.getGraphicsContext2D();
         this.loopTime = 0;
         this.rand = new Random(System.nanoTime());
+    }
+    public static Simulation getInstance() {
+        return instance;
     }
 
     public void setParameters(int count, int commRange, double failureChance) {

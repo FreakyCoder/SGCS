@@ -4,17 +4,20 @@ import javafx.animation.AnimationTimer;
 
 public class Loop extends AnimationTimer {
     private long prevTime;
-    private final Simulation sim;
     private boolean playing;
-    public Loop(Simulation sim) {
-        this.sim = sim;
+    private static final Loop instance =  new Loop();
+    private Loop() {
         this.playing = false;
+    }
+    public static Loop getInstance() {
+        return instance;
     }
     public void start() {
         prevTime = System.nanoTime();
         super.start();
     }
     public void handle(long currTime) {
+        Simulation sim = Simulation.getInstance();
         if (playing) {
             sim.update(currTime - prevTime);
             sim.draw();
