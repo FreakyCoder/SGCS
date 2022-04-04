@@ -17,18 +17,21 @@ public class Bot {
     private final double hy;
     // movement speed
     private final double speed;
+    // number of directions to consider
+    private final int consideredPositions;
     // pheromone map
     private final Set<Pheromone> pheromones;
     private int ticks;
     // random generator
     private final Random rand;
-    public Bot(double x, double y, double hx, double hy, double speed) {
+    public Bot(double x, double y, double hx, double hy, double speed, int consideredPositions) {
         // set parameters
         this.x = x;
         this.y = y;
         this.hx = hx;
         this.hy = hy;
         this.speed = speed;
+        this.consideredPositions = consideredPositions;
         this.ticks = 0;
         // initialize pheromone map
         pheromones = new HashSet<>();
@@ -43,7 +46,7 @@ public class Bot {
     public void move(long timeStep) {
         double bestDesirabiilty = Double.NaN, bestAng = 0, desirability, ang;
         // possible future positions
-        for (int i = 0; i < 5; ++ i) {
+        for (int i = 0; i < consideredPositions; ++ i) {
             // generate random angle for direction
             ang = 360 * rand.nextDouble();
             // calculate the coordinates of the future positions from the angle

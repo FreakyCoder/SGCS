@@ -4,9 +4,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Screen;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 public class Simulation {
     // canvas
@@ -19,6 +17,10 @@ public class Simulation {
     private int commRange;
     // robot chance to fail every second
     private double failureChance;
+    // robot speed
+    private double speed;
+    // considered future positions by each robot
+    private int consideredPositions;
     // array of the robots
     private Bot[] bots;
     // random generator
@@ -41,16 +43,18 @@ public class Simulation {
     }
 
     // set the simulation parameters
-    public void setParameters(int count, int commRange, double failureChance) {
+    public void setParameters(int count, int commRange, double failureChance, double speed, int consideredPositions) {
         // set parameters
         this.count = count;
         this.commRange = commRange;
         this.failureChance = failureChance;
+        this.speed = speed;
+        this.consideredPositions = consideredPositions;
         // initialize bot array
         bots = new Bot[count];
         // create new bots in a circle
         for (int i = 0; i < count; ++ i) {
-            bots[i] = new Bot(canvas.getWidth() / 2 + count * Math.cos(Math.toRadians(i * (360.0 / count))), canvas.getHeight() / 2 + count * Math.sin(Math.toRadians(i * (360.0 / count))), canvas.getWidth() / 2, canvas.getHeight() / 2, 0.1);
+            bots[i] = new Bot(canvas.getWidth() / 2 + count * Math.cos(Math.toRadians(i * (360.0 / count))), canvas.getHeight() / 2 + count * Math.sin(Math.toRadians(i * (360.0 / count))), canvas.getWidth() / 2, canvas.getHeight() / 2, speed * 0.1, consideredPositions);
         }
     }
     // getters
@@ -63,6 +67,8 @@ public class Simulation {
     public double getFailureChance() {
         return failureChance;
     }
+    public double getSpeed() { return speed; }
+    public int getConsideredPositions() { return consideredPositions; }
     // calculate the distance between two robots
     private double dist(Bot a, Bot b) {
         return Math.sqrt((a.getX() - b.getX()) * (a.getX() - b.getX()) + (a.getY() - b.getY()) * (a.getY() - b.getY()));
