@@ -22,6 +22,8 @@ public class Bot {
     // pheromone map
     private final Set<Pheromone> pheromones;
     private int ticks;
+    // should the trail be visible
+    private boolean trailVisibility = false;
     // random generator
     private final Random rand;
     public Bot(double x, double y, double hx, double hy, double speed, int consideredPositions) {
@@ -44,7 +46,7 @@ public class Bot {
     }
     // move the bot
     public void move(long timeStep) {
-        double bestDesirabiilty = Double.NaN, bestAng = 0, desirability, ang;
+        double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
         // possible future positions
         for (int i = 0; i < consideredPositions; ++ i) {
             // generate random angle for direction
@@ -62,8 +64,8 @@ public class Bot {
             // the farther the position is from home, the less desirable it is
             desirability -= dist(fx, fy, hx, hy) * dist(fx, fy, hx, hy);
             // find the best desirability and angle
-            if (Double.isNaN(bestDesirabiilty) || bestDesirabiilty < desirability) {
-                bestDesirabiilty = desirability;
+            if (Double.isNaN(bestDesirability) || bestDesirability < desirability) {
+                bestDesirability = desirability;
                 bestAng = ang;
             }
         }
@@ -75,6 +77,10 @@ public class Bot {
         // move the bot in the chosen direction
         x += timeStep * speed * Math.cos(Math.toRadians(bestAng));
         y += timeStep * speed * Math.sin(Math.toRadians(bestAng));
+    }
+    // setters
+    public void setTrailVisibility(boolean value) {
+        trailVisibility = value;
     }
     // getters
     public double getX() { return x; }
@@ -88,5 +94,10 @@ public class Bot {
     public void draw(GraphicsContext ctx) {
         ctx.setFill(Color.BLACK);
         ctx.fillOval(x, y, 10, 10);
+        if (trailVisibility) {
+            for (Pheromone p : pheromones) {
+                p.draw(ctx);
+            }
+        }
     }
 }

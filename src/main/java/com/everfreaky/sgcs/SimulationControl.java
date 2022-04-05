@@ -44,6 +44,8 @@ public class SimulationControl extends VBox {
     private final Label simulationParametersLabel;
     // JavaFX label for the simulation parameters
     private final Label simulationParameters;
+    // Show trail checkboxes
+    private final ShowTrailCheckboxes showTrailCheckboxes = ShowTrailCheckboxes.getInstance();
     // JavaFX button to pause and play the simulation
     private final Button pausePlayButton;
     // has the simulation begun
@@ -240,7 +242,8 @@ public class SimulationControl extends VBox {
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
             simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s\nRobot speed: %s\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), sim.getConsideredPositions()));
-            this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, pausePlayButton);
+            showTrailCheckboxes.setCheckboxCount(sim.getCount());
+            this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
         }
     }
 }

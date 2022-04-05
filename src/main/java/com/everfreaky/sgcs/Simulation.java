@@ -57,6 +57,10 @@ public class Simulation {
             bots[i] = new Bot(canvas.getWidth() / 2 + count * Math.cos(Math.toRadians(i * (360.0 / count))), canvas.getHeight() / 2 + count * Math.sin(Math.toRadians(i * (360.0 / count))), canvas.getWidth() / 2, canvas.getHeight() / 2, speed * 0.1, consideredPositions);
         }
     }
+    // toggle the visibility of robot's pheromones
+    public void setTrailVisibility(int i, boolean value) {
+        bots[i].setTrailVisibility(value);
+    }
     // getters
     public int getCount() {
         return count;
