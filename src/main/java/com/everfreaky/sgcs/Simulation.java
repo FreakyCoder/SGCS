@@ -19,6 +19,8 @@ public class Simulation {
     private double failureChance;
     // robot speed
     private double speed;
+    // the rate at which a robot's battery discharges
+    private double batteryDischargeRate;
     // considered future positions by each robot
     private int consideredPositions;
     // array of the robots
@@ -43,18 +45,19 @@ public class Simulation {
     }
 
     // set the simulation parameters
-    public void setParameters(int count, int commRange, double failureChance, double speed, int consideredPositions) {
+    public void setParameters(int count, int commRange, double failureChance, double speed, double batteryDischargeRate, int consideredPositions) {
         // set parameters
         this.count = count;
         this.commRange = commRange;
         this.failureChance = failureChance;
         this.speed = speed;
+        this.batteryDischargeRate = batteryDischargeRate;
         this.consideredPositions = consideredPositions;
         // initialize bot array
         bots = new Bot[count];
         // create new bots in a circle
         for (int i = 0; i < count; ++ i) {
-            bots[i] = new Bot(canvas.getWidth() / 2 + count * Math.cos(Math.toRadians(i * (360.0 / count))), canvas.getHeight() / 2 + count * Math.sin(Math.toRadians(i * (360.0 / count))), canvas.getWidth() / 2, canvas.getHeight() / 2, speed * 0.1, consideredPositions);
+            bots[i] = new Bot(canvas.getWidth() / 2 + count * Math.cos(Math.toRadians(i * (360.0 / count))), canvas.getHeight() / 2 + count * Math.sin(Math.toRadians(i * (360.0 / count))), canvas.getWidth() / 2, canvas.getHeight() / 2, speed * 0.1, batteryDischargeRate, consideredPositions);
         }
     }
     // toggle the visibility of robot's pheromones
@@ -72,6 +75,7 @@ public class Simulation {
         return failureChance;
     }
     public double getSpeed() { return speed; }
+    public double getBatteryDischargeRate() { return batteryDischargeRate; }
     public int getConsideredPositions() { return consideredPositions; }
     // calculate the distance between two robots
     private double dist(Bot a, Bot b) {
@@ -95,8 +99,13 @@ public class Simulation {
                         continue;
                     }
                 }
+                // check if the robot's battery is fully discharged, and destroy it
+                if (bots[i].getBattery() <= 0) {
+                    bots[i] = null;
+                    continue;
+                }
                 // move the bot
-                bots[i].move(timeStep);
+                bots[i].update(timeStep);
                 // check which two bots are within communication range to exchange pheromone maps
                 for (int j = 0; j < i; ++j) {
                     if (bots[j] != null && dist(bots[i], bots[j]) <= commRange) {

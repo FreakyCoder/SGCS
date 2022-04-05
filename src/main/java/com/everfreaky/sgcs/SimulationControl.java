@@ -34,6 +34,10 @@ public class SimulationControl extends VBox {
     private final Label speedLabel;
     // JavaFX text field for the robot speed
     private final TextField speedField;
+    // JavaFX label for the rate of battery discharge field
+    private final Label batteryDischargeRateLabel;
+    // JavaFX text field for the rate of battery discharge
+    private final TextField batteryDischargeRateField;
     // JavaFX label for the considered future positions field
     private final Label consideredPositionsLabel;
     // JavaFX text field for the considered future positions
@@ -150,6 +154,25 @@ public class SimulationControl extends VBox {
                speedField.setText("1");
             }
         });
+        // battery discharge label and text field
+        batteryDischargeRateLabel = new Label("Battery discharge rate(% per second): ");
+        batteryDischargeRateLabel.setFont(new Font("Arial", 36));
+        batteryDischargeRateField = new TextField();
+        batteryDischargeRateField.setMaxWidth(600);
+        batteryDischargeRateField.setText("1");
+        batteryDischargeRateField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+                Platform.runLater(() -> {
+                    batteryDischargeRateField.setText(oldValue);
+                    batteryDischargeRateField.positionCaret(batteryDischargeRateField.getLength());
+                });
+            }
+        });
+        batteryDischargeRateField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue && !batteryDischargeRateField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+               batteryDischargeRateField.setText("1");
+            }
+        });
         // considered future positions label and text field
         consideredPositionsLabel = new Label("Considered future positions(1-1000): ");
         consideredPositionsLabel.setFont(new Font("Arial", 36));
@@ -221,11 +244,14 @@ public class SimulationControl extends VBox {
         if (!speedField.getText().matches("^([0-9][,.][0-9]{0,15})|10$")) {
             speedField.setText("1");
         }
+        if (!batteryDischargeRateField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+            batteryDischargeRateField.setText("1");
+        }
         if (!consideredPositionsField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
             consideredPositionsField.setText("5");
         }
         // set the simulation parameters
-        sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()), Double.parseDouble(speedField.getText()), Integer.parseInt(consideredPositionsField.getText()));
+        sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()), Double.parseDouble(speedField.getText()), Double.parseDouble(batteryDischargeRateField.getText()), Integer.parseInt(consideredPositionsField.getText()));
         // start the animation loop
         loop.start();
         loop.play();
@@ -238,10 +264,10 @@ public class SimulationControl extends VBox {
         this.getChildren().clear();
         // if setting parameters
         if (this.isHome) {
-            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, consideredPositionsLabel, consideredPositionsField, startButton);
+            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, startButton);
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
-            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s\nRobot speed: %s\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), sim.getConsideredPositions()));
+            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions()));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
             this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
         }

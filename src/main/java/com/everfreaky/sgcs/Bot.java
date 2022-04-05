@@ -2,6 +2,7 @@ package com.everfreaky.sgcs;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -12,11 +13,16 @@ public class Bot {
     // bot position
     private double x;
     private double y;
+    private static final double radius = 10;
     // home coordinates
     private final double hx;
     private final double hy;
     // movement speed
     private final double speed;
+    // battery discharge rate
+    private final double batteryDischargeRate;
+    // remaining battery
+    private double battery = 100;
     // number of directions to consider
     private final int consideredPositions;
     // pheromone map
@@ -26,13 +32,14 @@ public class Bot {
     private boolean trailVisibility = false;
     // random generator
     private final Random rand;
-    public Bot(double x, double y, double hx, double hy, double speed, int consideredPositions) {
+    public Bot(double x, double y, double hx, double hy, double speed, double batteryDischargeRate, int consideredPositions) {
         // set parameters
         this.x = x;
         this.y = y;
         this.hx = hx;
         this.hy = hy;
         this.speed = speed;
+        this.batteryDischargeRate = batteryDischargeRate;
         this.consideredPositions = consideredPositions;
         this.ticks = 0;
         // initialize pheromone map
@@ -44,8 +51,8 @@ public class Bot {
     private double dist(double x1, double y1, double x2, double y2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
-    // move the bot
-    public void move(long timeStep) {
+    // update the position and battery
+    public void update(long timeStep) {
         double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
         // possible future positions
         for (int i = 0; i < consideredPositions; ++ i) {
@@ -77,6 +84,8 @@ public class Bot {
         // move the bot in the chosen direction
         x += timeStep * speed * Math.cos(Math.toRadians(bestAng));
         y += timeStep * speed * Math.sin(Math.toRadians(bestAng));
+        // discharge the battery
+        battery -= batteryDischargeRate * timeStep / 1000;
     }
     // setters
     public void setTrailVisibility(boolean value) {
@@ -85,6 +94,7 @@ public class Bot {
     // getters
     public double getX() { return x; }
     public double getY() { return y; }
+    public double getBattery() { return battery; }
     public Set<Pheromone> getPheromones() { return pheromones; }
     // add pheromones to the pheromone map
     public void updatePheromones(Set<Pheromone> newPheromones) {
@@ -93,7 +103,10 @@ public class Bot {
     // draw the robot
     public void draw(GraphicsContext ctx) {
         ctx.setFill(Color.BLACK);
-        ctx.fillOval(x, y, 10, 10);
+        ctx.fillOval(x, y, radius, radius);
+        // show remaining battery above the robot
+        ctx.setTextAlign(TextAlignment.CENTER);
+        ctx.fillText(String.format("%.2f%%", battery), x + radius / 2, y - radius / 2);
         if (trailVisibility) {
             for (Pheromone p : pheromones) {
                 p.draw(ctx);
