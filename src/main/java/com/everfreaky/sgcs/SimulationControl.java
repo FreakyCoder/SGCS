@@ -113,14 +113,14 @@ public class SimulationControl extends VBox {
             }
         });
         // failure chance label and text field
-        failureChanceLabel = new Label("Failure chance(0 - 1): ");
+        failureChanceLabel = new Label("Failure chance(% per second): ");
         failureChanceLabel.setFont(new Font("Arial", 36));
         failureChanceField = new TextField();
         failureChanceField.setMaxWidth(600);
         failureChanceField.setText("0");
         // verify value on text change
         failureChanceField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("^((0([.,][0-9]{0,15})?)?)|1$")) {
+            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
                 Platform.runLater(() -> {
                     failureChanceField.setText(oldValue);
                     failureChanceField.positionCaret(failureChanceField.getLength());
@@ -129,7 +129,7 @@ public class SimulationControl extends VBox {
         });
         // verify value on loss of focus
         failureChanceField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !failureChanceField.getText().matches("^(0[,.][0-9]{0,15})|1$")) {
+            if (!newValue && !failureChanceField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
                 failureChanceField.setText("0");
             }
         });
@@ -238,7 +238,7 @@ public class SimulationControl extends VBox {
         if (!commRangeField.getText().matches("^([1-9][0-9]?|100)$")) {
             commRangeField.setText("1");
         }
-        if (!failureChanceField.getText().matches("^(0[,.][0-9]{0,15})|1$")) {
+        if (!failureChanceField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
             failureChanceField.setText("0");
         }
         if (!speedField.getText().matches("^([0-9][,.][0-9]{0,15})|10$")) {
@@ -267,7 +267,7 @@ public class SimulationControl extends VBox {
             this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, startButton);
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
-            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions()));
+            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions()));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
             this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
         }

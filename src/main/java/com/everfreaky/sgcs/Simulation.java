@@ -49,7 +49,8 @@ public class Simulation {
         // set parameters
         this.count = count;
         this.commRange = commRange;
-        this.failureChance = failureChance;
+        // convert from percentage
+        this.failureChance = failureChance / 100;
         this.speed = speed;
         this.batteryDischargeRate = batteryDischargeRate;
         this.consideredPositions = consideredPositions;
@@ -71,9 +72,7 @@ public class Simulation {
     public int getCommRange() {
         return commRange;
     }
-    public double getFailureChance() {
-        return failureChance;
-    }
+    public double getFailureChance() { return failureChance * 100; }
     public double getSpeed() { return speed; }
     public double getBatteryDischargeRate() { return batteryDischargeRate; }
     public int getConsideredPositions() { return consideredPositions; }
