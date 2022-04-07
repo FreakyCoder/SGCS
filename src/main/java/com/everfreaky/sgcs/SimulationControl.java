@@ -270,6 +270,8 @@ public class SimulationControl extends VBox {
             simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions()));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
             this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
+            // select the pause/play button by default
+            Platform.runLater(pausePlayButton::requestFocus);
         }
     }
 }

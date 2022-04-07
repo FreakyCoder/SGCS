@@ -141,7 +141,5 @@ public class Bot {
                 p.draw(ctx);
             }
         }
-        ctx.setFill(Color.RED);
-        ctx.fillOval(hx, hy, radius / 2, radius / 2);
     }
 }
