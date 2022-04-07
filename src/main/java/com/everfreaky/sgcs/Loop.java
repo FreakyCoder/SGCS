@@ -29,9 +29,9 @@ public class Loop extends AnimationTimer {
         if (playing) {
             // call the simulation update with the time passed since the last iteration
             sim.update(currTime - prevTime);
-            // draw on the canvas
-            sim.draw();
         }
+        // draw on the canvas
+        sim.draw();
         // record time of the current iteration to be used in the next
         prevTime = currTime;
     }

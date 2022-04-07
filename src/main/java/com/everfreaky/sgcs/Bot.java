@@ -17,6 +17,8 @@ public class Bot {
     // home coordinates
     private final double hx;
     private final double hy;
+    // the angle at which the bot is currently moving
+    private double currAng;
     // movement speed
     private final double speed;
     // battery discharge rate
@@ -29,7 +31,9 @@ public class Bot {
     private final Set<Pheromone> pheromones;
     private int ticks;
     // should the trail be visible
-    private boolean trailVisibility = false;
+    private boolean trailVisibility;
+    // is the robot currently returning to recharge
+    private boolean returning;
     // random generator
     private final Random rand;
     public Bot(double x, double y, double hx, double hy, double speed, double batteryDischargeRate, int consideredPositions) {
@@ -38,9 +42,12 @@ public class Bot {
         this.y = y;
         this.hx = hx;
         this.hy = hy;
+        this.currAng = 0;
         this.speed = speed;
         this.batteryDischargeRate = batteryDischargeRate;
         this.consideredPositions = consideredPositions;
+        this.trailVisibility = false;
+        this.returning = false;
         this.ticks = 0;
         // initialize pheromone map
         pheromones = new HashSet<>();
@@ -53,37 +60,59 @@ public class Bot {
     }
     // update the position and battery
     public void update(long timeStep) {
-        double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
-        // possible future positions
-        for (int i = 0; i < consideredPositions; ++ i) {
-            // generate random angle for direction
-            ang = 360 * rand.nextDouble();
-            // calculate the coordinates of the future positions from the angle
-            double fx = x + timeStep * speed * Math.cos(Math.toRadians(ang));
-            double fy = y + timeStep * speed * Math.sin(Math.toRadians(ang));
-            desirability = 0;
-            // calculate the distance to each pheromone and add it to the desirability
-            // the farther the positions is from all pheromones, the more desirable it is
-            for (Pheromone p : pheromones) {
-                double d = dist(fx, fy, p.getX(), p.getY());
-                desirability += d;
-            }
-            // the farther the position is from home, the less desirable it is
-            desirability -= dist(fx, fy, hx, hy) * dist(fx, fy, hx, hy);
-            // find the best desirability and angle
-            if (Double.isNaN(bestDesirability) || bestDesirability < desirability) {
-                bestDesirability = desirability;
-                bestAng = ang;
+        if (ticks % 120 == 0) {
+            if (!returning) {
+                double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
+                // possible future positions
+                for (int i = 0; i < consideredPositions; ++i) {
+                    // generate random angle for direction
+                    ang = 360 * rand.nextDouble();
+                    // estimate coordinates of the future positions from the angle
+                    double fx = x + 120 * timeStep * speed * Math.cos(Math.toRadians(ang));
+                    double fy = y + 120 * timeStep * speed * Math.sin(Math.toRadians(ang));
+                    // ensure that the robot has around 10% battery when it returns home
+                    if ((dist(x, y, fx, fy) + dist(fx, fy, hx, hy)) / speed * batteryDischargeRate / 1000 < battery - 10) {
+                        desirability = 0;
+                        // calculate the distance to each pheromone and add it to the desirability
+                        // the farther the positions is from all pheromones, the more desirable it is
+                        for (Pheromone p : pheromones) {
+                            double d = dist(fx, fy, p.getX(), p.getY());
+                            desirability += d;
+                        }
+                        // find the best desirability and angle, only if the current positions allows for the return
+                        // of the robot, considering its battery level and speed
+                        if (Double.isNaN(bestDesirability) || bestDesirability < desirability) {
+                            bestDesirability = desirability;
+                            bestAng = ang;
+                        }
+                    }
+                }
+                // if no future position is possible, return to home
+                if (Double.isNaN(bestDesirability)) {
+                    currAng = Math.toDegrees(Math.atan2(hy - y, hx - x));
+                    returning = true;
+                } else {
+                    // go to the most desired future position
+                    currAng = bestAng;
+                }
             }
         }
-        // drop new pheromone every 60 ticks
-        if (ticks == 59) {
+        if (returning && dist(x, y, hx, hy) <= timeStep * speed) {
+            // recharge
+            returning = false;
+            battery = 100;
+            x = hx;
+            y = hy;
+            return;
+        }
+        if (ticks % 60 == 0) {
+            // drop new pheromone every 60 ticks
             pheromones.add(new Pheromone(x, y));
         }
-        ticks = (ticks + 1) % 60;
+        ticks = (ticks + 1) % 120;
         // move the bot in the chosen direction
-        x += timeStep * speed * Math.cos(Math.toRadians(bestAng));
-        y += timeStep * speed * Math.sin(Math.toRadians(bestAng));
+        x += timeStep * speed * Math.cos(Math.toRadians(currAng));
+        y += timeStep * speed * Math.sin(Math.toRadians(currAng));
         // discharge the battery
         battery -= batteryDischargeRate * timeStep / 1000;
     }
@@ -112,5 +141,7 @@ public class Bot {
                 p.draw(ctx);
             }
         }
+        ctx.setFill(Color.RED);
+        ctx.fillOval(hx, hy, radius / 2, radius / 2);
     }
 }

@@ -63,7 +63,7 @@ public class Simulation {
     }
     // toggle the visibility of robot's pheromones
     public void setTrailVisibility(int i, boolean value) {
-        bots[i].setTrailVisibility(value);
+        if (bots[i] != null) { bots[i].setTrailVisibility(value); }
     }
     // getters
     public int getCount() {
