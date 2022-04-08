@@ -71,15 +71,20 @@ public class SimulationControl extends VBox {
         this.setStyle("-fx-border-color: black");
         this.setAlignment(Pos.CENTER);
         this.setSpacing(height / 100);
+        Font titleFont = Font.loadFont(getClass().getResourceAsStream("/fonts/font.ttf"), 48);
+        Font labelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/font.ttf"), 36);
+        Font simulationParametersFont = Font.loadFont(getClass().getResourceAsStream("/fonts/font.ttf"), 24);
+        Font fieldFont = Font.loadFont(getClass().getResourceAsStream("/fonts/font.ttf"), 12);
         // get loop instance
         Loop loop = Loop.getInstance();
         // set the pane title and font
         parameterTitle = new Label("SGCS Simulation Parameters");
-        parameterTitle.setFont(new Font("Arial", 48));
+        parameterTitle.setFont(titleFont);
         // robot count parameter label and text field
         countLabel = new Label("Robot count(1-1000): ");
-        countLabel.setFont(new Font("Arial", 36));
+        countLabel.setFont(labelFont);
         countField = new TextField();
+        countField.setFont(fieldFont);
         countField.setMaxWidth(600);
         countField.setText("1");
         // verify value on text change
@@ -99,8 +104,9 @@ public class SimulationControl extends VBox {
         });
         // communication range label and text field
         commRangeLabel = new Label("Communication range(1-100): ");
-        commRangeLabel.setFont(new Font("Arial", 36));
+        commRangeLabel.setFont(labelFont);
         commRangeField = new TextField();
+        commRangeField.setFont(fieldFont);
         commRangeField.setMaxWidth(600);
         commRangeField.setText("1");
         // verify value on text change
@@ -120,8 +126,9 @@ public class SimulationControl extends VBox {
         });
         // failure chance label and text field
         failureChanceLabel = new Label("Failure chance(% per second): ");
-        failureChanceLabel.setFont(new Font("Arial", 36));
+        failureChanceLabel.setFont(labelFont);
         failureChanceField = new TextField();
+        failureChanceField.setFont(fieldFont);
         failureChanceField.setMaxWidth(600);
         failureChanceField.setText("0");
         // verify value on text change
@@ -141,8 +148,9 @@ public class SimulationControl extends VBox {
         });
         // robot speed label and text field
         speedLabel = new Label("Robot speed(0-10): ");
-        speedLabel.setFont(new Font("Arial", 36)) ;
+        speedLabel.setFont(labelFont);
         speedField = new TextField();
+        speedField.setFont(fieldFont);
         speedField.setMaxWidth(600);
         speedField.setText("1");
         // verify value on text change
@@ -162,8 +170,9 @@ public class SimulationControl extends VBox {
         });
         // battery discharge label and text field
         batteryDischargeRateLabel = new Label("Battery discharge rate(% per second): ");
-        batteryDischargeRateLabel.setFont(new Font("Arial", 36));
+        batteryDischargeRateLabel.setFont(labelFont);
         batteryDischargeRateField = new TextField();
+        batteryDischargeRateField.setFont(fieldFont);
         batteryDischargeRateField.setMaxWidth(600);
         batteryDischargeRateField.setText("1");
         batteryDischargeRateField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
@@ -181,8 +190,9 @@ public class SimulationControl extends VBox {
         });
         // considered future positions label and text field
         consideredPositionsLabel = new Label("Considered future positions(1-1000): ");
-        consideredPositionsLabel.setFont(new Font("Arial", 36));
+        consideredPositionsLabel.setFont(labelFont);
         consideredPositionsField = new TextField();
+        consideredPositionsField.setFont(fieldFont);
         consideredPositionsField.setMaxWidth(600);
         consideredPositionsField.setText("5");
         // verify value on text change
@@ -202,8 +212,9 @@ public class SimulationControl extends VBox {
         });
         // pheromone decay rate label and text field
         pheromoneDecayLabel = new Label("Pheromone decay rate(% per second): ");
-        pheromoneDecayLabel.setFont(new Font("Arial", 36));
+        pheromoneDecayLabel.setFont(labelFont);
         pheromoneDecayField = new TextField();
+        pheromoneDecayField.setFont(fieldFont);
         pheromoneDecayField.setMaxWidth(600);
         pheromoneDecayField.setText("0");
         // verify value on change
@@ -223,26 +234,26 @@ public class SimulationControl extends VBox {
         });
         // button to start the simulation
         startButton = new Button("Start Simulation");
-        startButton.setFont(new Font("Arial", 36));
+        startButton.setFont(labelFont);
         startButton.setDefaultButton(true);
         // start the simulation on click
         startButton.setOnAction((ActionEvent e) -> startSimulation());
         // quit button
         quitButton = new Button("Quit");
-        quitButton.setFont(new Font("Arial", 36));
+        quitButton.setFont(labelFont);
         // quit on click
         quitButton.setOnAction(e -> Platform.exit());
         setScene();
         // running simulation UI
         simulationTitle = new Label("SGCS Simulation");
-        simulationTitle.setFont(new Font("Arial", 48));
+        simulationTitle.setFont(titleFont);
         simulationParametersLabel = new Label("Simulation parameters:");
-        simulationParametersLabel.setFont(new Font("Arial", 36));
+        simulationParametersLabel.setFont(labelFont);
         simulationParameters = new Label("No simulation parameters entered.");
-        simulationParameters.setFont(new Font("Arial", 24));
+        simulationParameters.setFont(simulationParametersFont);
         // pause-play button
         pausePlayButton = new Button("Pause");
-        pausePlayButton.setFont(new Font("Arial", 36));
+        pausePlayButton.setFont(labelFont);
         pausePlayButton.setDefaultButton(true);
         pausePlayButton.setOnAction((ActionEvent e) -> {
             if (loop.isPlaying()) {

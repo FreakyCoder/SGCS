@@ -2,6 +2,7 @@ package com.everfreaky.sgcs;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 import java.util.HashSet;
@@ -35,7 +36,9 @@ public class Bot {
     // is the robot currently returning to recharge
     private boolean returning;
     // random generator
-    private final Random rand;
+    private static final Random rand = new Random(System.nanoTime());
+    // battery percentage font
+    private static final Font font = Font.loadFont(Bot.class.getResourceAsStream("/fonts/font.ttf"), 18);
     public Bot(double x, double y, double hx, double hy, double speed, double batteryDischargeRate, int consideredPositions) {
         // set parameters
         this.x = x;
@@ -51,8 +54,6 @@ public class Bot {
         this.ticks = 0;
         // initialize pheromone map
         pheromones = new HashSet<>();
-        // initialize random generator
-        this.rand = new Random(System.nanoTime());
     }
     // Find the distance between two points
     private double dist(double x1, double y1, double x2, double y2) {
@@ -144,6 +145,7 @@ public class Bot {
         ctx.fillOval(x, y, radius, radius);
         // show remaining battery above the robot
         ctx.setTextAlign(TextAlignment.CENTER);
+        ctx.setFont(font);
         ctx.fillText(String.format("%.2f%%", battery), x + radius / 2, y - radius / 2);
         if (trailVisibility) {
             for (Pheromone p : pheromones) {
