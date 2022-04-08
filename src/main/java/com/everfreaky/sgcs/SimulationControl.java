@@ -56,6 +56,8 @@ public class SimulationControl extends VBox {
     private final ShowTrailCheckboxes showTrailCheckboxes = ShowTrailCheckboxes.getInstance();
     // JavaFX button to pause and play the simulation
     private final Button pausePlayButton;
+    // JavaFX button to quite the application
+    private final Button quitButton;
     // has the simulation begun
     private boolean isHome = true;
     // singleton instance
@@ -225,6 +227,11 @@ public class SimulationControl extends VBox {
         startButton.setDefaultButton(true);
         // start the simulation on click
         startButton.setOnAction((ActionEvent e) -> startSimulation());
+        // quit button
+        quitButton = new Button("Quit");
+        quitButton.setFont(new Font("Arial", 36));
+        // quit on click
+        quitButton.setOnAction(e -> Platform.exit());
         setScene();
         // running simulation UI
         simulationTitle = new Label("SGCS Simulation");
@@ -292,12 +299,12 @@ public class SimulationControl extends VBox {
         this.getChildren().clear();
         // if setting parameters
         if (this.isHome) {
-            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, pheromoneDecayLabel, pheromoneDecayField, startButton);
+            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, pheromoneDecayLabel, pheromoneDecayField, startButton, quitButton);
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
             simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d\nPheromone decay rate: %s%%", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions(), doubleFormat.format(sim.getPheromoneDecayRate())));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
-            this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
+            this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton, quitButton);
             // select the pause/play button by default
             Platform.runLater(pausePlayButton::requestFocus);
         }

@@ -8,8 +8,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class SGCS extends Application {
     @Override
     public void start(final Stage stage) {
