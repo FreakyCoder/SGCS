@@ -42,6 +42,10 @@ public class SimulationControl extends VBox {
     private final Label consideredPositionsLabel;
     // JavaFX text field for the considered future positions
     private final TextField consideredPositionsField;
+    // JavaFX label for the pheromone decay rate field
+    private final Label pheromoneDecayLabel;
+    // JavaFX text field for the pheromone decay rate
+    private final TextField pheromoneDecayField;
     // JavaFX label for the title of the simulation
     private final Label simulationTitle;
     // JavaFX label for the simulation parameters title
@@ -194,6 +198,27 @@ public class SimulationControl extends VBox {
                 consideredPositionsField.setText("5");
             }
         });
+        // pheromone decay rate label and text field
+        pheromoneDecayLabel = new Label("Pheromone decay rate(% per second): ");
+        pheromoneDecayLabel.setFont(new Font("Arial", 36));
+        pheromoneDecayField = new TextField();
+        pheromoneDecayField.setMaxWidth(600);
+        pheromoneDecayField.setText("0");
+        // verify value on change
+        pheromoneDecayField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+                Platform.runLater(() -> {
+                    pheromoneDecayField.setText(oldValue);
+                    pheromoneDecayField.positionCaret(pheromoneDecayField.getLength());
+                });
+            }
+        });
+        // verify format on loss of focus
+        pheromoneDecayField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue && !pheromoneDecayField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+                pheromoneDecayField.setText("0");
+            }
+        });
         // button to start the simulation
         startButton = new Button("Start Simulation");
         startButton.setFont(new Font("Arial", 36));
@@ -250,8 +275,11 @@ public class SimulationControl extends VBox {
         if (!consideredPositionsField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
             consideredPositionsField.setText("5");
         }
+        if (!pheromoneDecayField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+            pheromoneDecayField.setText("0");
+        }
         // set the simulation parameters
-        sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()), Double.parseDouble(speedField.getText()), Double.parseDouble(batteryDischargeRateField.getText()), Integer.parseInt(consideredPositionsField.getText()));
+        sim.setParameters(Integer.parseInt(countField.getText()), Integer.parseInt(commRangeField.getText()), Double.parseDouble(failureChanceField.getText()), Double.parseDouble(speedField.getText()), Double.parseDouble(batteryDischargeRateField.getText()), Integer.parseInt(consideredPositionsField.getText()), Double.parseDouble(pheromoneDecayField.getText()));
         // start the animation loop
         loop.start();
         loop.play();
@@ -264,10 +292,10 @@ public class SimulationControl extends VBox {
         this.getChildren().clear();
         // if setting parameters
         if (this.isHome) {
-            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, startButton);
+            this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, pheromoneDecayLabel, pheromoneDecayField, startButton);
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
-            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions()));
+            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d\nPheromone decay rate: %s%%", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions(), doubleFormat.format(sim.getPheromoneDecayRate())));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
             this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton);
             // select the pause/play button by default

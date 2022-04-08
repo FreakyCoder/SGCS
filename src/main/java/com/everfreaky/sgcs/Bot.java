@@ -60,6 +60,14 @@ public class Bot {
     }
     // update the position and battery
     public void update(long timeStep) {
+        Simulation sim = Simulation.getInstance();
+        // update all pheromones
+        for (Pheromone p : pheromones) {
+            p.update(timeStep);
+        }
+        // delete pheromone if expired
+        pheromones.removeIf(p -> p.getStrength() <= 0);
+        // decide the movement direction
         if (ticks % 120 == 0) {
             if (!returning) {
                 double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
@@ -77,7 +85,7 @@ public class Bot {
                         // the farther the positions is from all pheromones, the more desirable it is
                         for (Pheromone p : pheromones) {
                             double d = dist(fx, fy, p.getX(), p.getY());
-                            desirability += d;
+                            desirability += p.getStrength() * d;
                         }
                         // find the best desirability and angle, only if the current positions allows for the return
                         // of the robot, considering its battery level and speed
@@ -107,7 +115,7 @@ public class Bot {
         }
         if (ticks % 60 == 0) {
             // drop new pheromone every 60 ticks
-            pheromones.add(new Pheromone(x, y));
+            pheromones.add(new Pheromone(x, y, sim.getPheromoneDecayRate() / 100));
         }
         ticks = (ticks + 1) % 120;
         // move the bot in the chosen direction
@@ -132,6 +140,7 @@ public class Bot {
     // draw the robot
     public void draw(GraphicsContext ctx) {
         ctx.setFill(Color.BLACK);
+        ctx.setGlobalAlpha(1);
         ctx.fillOval(x, y, radius, radius);
         // show remaining battery above the robot
         ctx.setTextAlign(TextAlignment.CENTER);

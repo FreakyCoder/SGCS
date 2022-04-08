@@ -23,6 +23,8 @@ public class Simulation {
     private double batteryDischargeRate;
     // considered future positions by each robot
     private int consideredPositions;
+    // pheromone decay rate
+    private double pheromoneDecayRate;
     // array of the robots
     private Bot[] bots;
     // random generator
@@ -45,7 +47,7 @@ public class Simulation {
     }
 
     // set the simulation parameters
-    public void setParameters(int count, int commRange, double failureChance, double speed, double batteryDischargeRate, int consideredPositions) {
+    public void setParameters(int count, int commRange, double failureChance, double speed, double batteryDischargeRate, int consideredPositions, double pheromoneDecayRate) {
         // set parameters
         this.count = count;
         this.commRange = commRange;
@@ -54,6 +56,7 @@ public class Simulation {
         this.speed = speed;
         this.batteryDischargeRate = batteryDischargeRate;
         this.consideredPositions = consideredPositions;
+        this.pheromoneDecayRate = pheromoneDecayRate;
         // initialize bot array
         bots = new Bot[count];
         // create new bots in a circle
@@ -66,16 +69,13 @@ public class Simulation {
         if (bots[i] != null) { bots[i].setTrailVisibility(value); }
     }
     // getters
-    public int getCount() {
-        return count;
-    }
-    public int getCommRange() {
-        return commRange;
-    }
+    public int getCount() { return count; }
+    public int getCommRange() { return commRange; }
     public double getFailureChance() { return failureChance * 100; }
     public double getSpeed() { return speed; }
     public double getBatteryDischargeRate() { return batteryDischargeRate; }
     public int getConsideredPositions() { return consideredPositions; }
+    public double getPheromoneDecayRate() { return pheromoneDecayRate; }
     // calculate the distance between two robots
     private double dist(Bot a, Bot b) {
         return Math.sqrt((a.getX() - b.getX()) * (a.getX() - b.getX()) + (a.getY() - b.getY()) * (a.getY() - b.getY()));
