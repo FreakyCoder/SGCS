@@ -1,4 +1,4 @@
-package com.everfreaky.sgcs;
+package sgcs;
 
 import javafx.animation.AnimationTimer;
 

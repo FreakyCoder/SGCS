@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.everfreaky</groupId>
+    <artifactId>SGCS</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>18</version>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os><family>windows</family></os>
+            </activation>
+            <properties>
+                <package.type>MSI</package.type>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>18</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.6</version>
+                <configuration>
+                    <executable>C:\Users\Kaloyan Dimitrov\.jdks\openjdk-18\bin\java</executable>
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>SGCS</launcher>
+                    <jlinkImageName>sgcs</jlinkImageName>
+                    <mainClass>sgcs/sgcs.SGCS</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.akman</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>0.1.3</version>
+                <configuration>
+                    <toolhome>C:\Users\Kaloyan Dimitrov\.jdks\openjdk-18\bin\jpackage</toolhome>
+                    <name>SGCS</name>
+                    <type>${package.type}</type>
+                    <description>A simulation of a swarm of robots collaboration of area surveillance.</description>
+                    <appversion>1.0</appversion>
+                    <vendor>Kaloyan Dimitrov</vendor>
+                    <module>sgcs/sgcs.SGCS</module>
+                    <runtimeimage>${project.build.directory}/sgcs</runtimeimage>
+                    <windirchooser>true</windirchooser>
+                    <winmenu>true</winmenu>
+                    <winperuserinstall>true</winperuserinstall>
+                    <winshortcut>true</winshortcut>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

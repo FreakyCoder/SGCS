@@ -1,5 +1,4 @@
-module com.everfreaky.sgcs {
+module sgcs {
     requires javafx.controls;
-
-    exports com.everfreaky.sgcs to javafx.graphics;
+    exports sgcs;
 }
