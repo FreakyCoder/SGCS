@@ -22,30 +22,44 @@ public class SimulationControl extends VBox {
     private final Label countLabel;
     // JavaFX text field for robot count
     private final TextField countField;
+    // keep previous caret position for form validation
+    private int countFieldPreviousCaretPosition;
     // JavaFX label for communication range text field
     private final Label commRangeLabel;
     // JavaFX text field for the communication range
     private final TextField commRangeField;
+    // keep previous caret position for form validation
+    private int commRangeFieldPreviousCaretPosition;
     // JavaFX label for the failure chance field
     private final Label failureChanceLabel;
     // JavaFX text field for the failure chance
     private final TextField failureChanceField;
+    // keep previous caret position for form validation
+    private int failureChanceFieldPreviousCaretPosition;
     // JavaFX label for the robot speed field
     private final Label speedLabel;
     // JavaFX text field for the robot speed
     private final TextField speedField;
+    // keep previous caret position for form validation
+    private int speedFieldPreviousCaretPosition;
     // JavaFX label for the rate of battery discharge field
     private final Label batteryDischargeRateLabel;
     // JavaFX text field for the rate of battery discharge
     private final TextField batteryDischargeRateField;
+    // keep previous caret position for form validation
+    private int batteryDischargeRateFieldPreviousCaretPosition;
     // JavaFX label for the considered future positions field
     private final Label consideredPositionsLabel;
     // JavaFX text field for the considered future positions
     private final TextField consideredPositionsField;
+    // keep previous caret position for form validation
+    private int consideredPositionsFieldPreviousCaretPosition;
     // JavaFX label for the pheromone decay rate field
     private final Label pheromoneDecayLabel;
     // JavaFX text field for the pheromone decay rate
     private final TextField pheromoneDecayField;
+    // keep previous caret position for form validation
+    private int pheromoneDecayFieldPreviousCaretPosition;
     // JavaFX label for the title of the simulation
     private final Label simulationTitle;
     // JavaFX label for the simulation parameters title
@@ -89,21 +103,48 @@ public class SimulationControl extends VBox {
         countField.setText("1");
         // verify value on text change
         countField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([1-9][0-9]{0,2}|1000)$")) {
-                Platform.runLater(() -> {
-                    countField.setText(oldValue);
-                    countField.positionCaret(countField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    int number = Integer.parseInt(newValue);
+                    if (number < 1 || number > 1000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        countField.setText(oldValue);
+                        countField.positionCaret(countFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                countFieldPreviousCaretPosition = countField.getCaretPosition();
             }
         });
         // verify format on loss of focus
         countField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !countField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
-                countField.setText("1");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    int number = Integer.parseInt(countField.getText());
+                    if (number < 1 || number > 1000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    countField.setText("1");
+                }
+            } else {
+                countFieldPreviousCaretPosition = countField.getCaretPosition();
             }
         });
         // communication range label and text field
-        commRangeLabel = new Label("Communication range(1-100): ");
+        commRangeLabel = new Label("Communication range(1-10000): ");
         commRangeLabel.setFont(labelFont);
         commRangeField = new TextField();
         commRangeField.setFont(fieldFont);
@@ -111,17 +152,44 @@ public class SimulationControl extends VBox {
         commRangeField.setText("1");
         // verify value on text change
         commRangeField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([1-9][0-9]?|100)$")) {
-                Platform.runLater(() -> {
-                    commRangeField.setText(oldValue);
-                    commRangeField.positionCaret(commRangeField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    int number = Integer.parseInt(newValue);
+                    if (number < 1 || number > 10000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        commRangeField.setText(oldValue);
+                        commRangeField.positionCaret(commRangeFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                commRangeFieldPreviousCaretPosition = commRangeField.getCaretPosition();
             }
         });
         // verify value on loss of focus
         commRangeField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !commRangeField.getText().matches("^([1-9][0-9]?|100)$")) {
-                commRangeField.setText("1");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    int number = Integer.parseInt(commRangeField.getText());
+                    if (number < 1 || number > 1000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    commRangeField.setText("1");
+                }
+            } else {
+                commRangeFieldPreviousCaretPosition = commRangeField.getCaretPosition();
             }
         });
         // failure chance label and text field
@@ -133,17 +201,44 @@ public class SimulationControl extends VBox {
         failureChanceField.setText("0");
         // verify value on text change
         failureChanceField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-                Platform.runLater(() -> {
-                    failureChanceField.setText(oldValue);
-                    failureChanceField.positionCaret(failureChanceField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    double number = Double.parseDouble(newValue);
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        failureChanceField.setText(oldValue);
+                        failureChanceField.positionCaret(failureChanceFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                failureChanceFieldPreviousCaretPosition = failureChanceField.getCaretPosition();
             }
         });
         // verify value on loss of focus
         failureChanceField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !failureChanceField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-                failureChanceField.setText("0");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    double number = Double.parseDouble(failureChanceField.getText());
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    failureChanceField.setText("0");
+                }
+            } else {
+                failureChanceFieldPreviousCaretPosition = failureChanceField.getCaretPosition();
             }
         });
         // robot speed label and text field
@@ -155,17 +250,44 @@ public class SimulationControl extends VBox {
         speedField.setText("1");
         // verify value on text change
         speedField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("^(([0-9]([.,][0-9]{0,15})?)?)|10$")) {
-                Platform.runLater(() -> {
-                    speedField.setText(oldValue);
-                    speedField.positionCaret(speedField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    double number = Double.parseDouble(newValue);
+                    if (number < 0 || number > 10) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        speedField.setText(oldValue);
+                        speedField.positionCaret(speedFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                speedFieldPreviousCaretPosition = speedField.getCaretPosition();
             }
         });
         // verify value on loss of focus
         speedField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !speedField.getText().matches("^([0-9][,.][0-9]{0,15})|10$")) {
-               speedField.setText("1");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    double number = Double.parseDouble(speedField.getText());
+                    if (number <= 0 || number > 10) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    speedField.setText("1");
+                }
+            } else {
+                speedFieldPreviousCaretPosition = speedField.getCaretPosition();
             }
         });
         // battery discharge label and text field
@@ -174,18 +296,45 @@ public class SimulationControl extends VBox {
         batteryDischargeRateField = new TextField();
         batteryDischargeRateField.setFont(fieldFont);
         batteryDischargeRateField.setMaxWidth(600);
-        batteryDischargeRateField.setText("1");
+        batteryDischargeRateField.setText("0");
         batteryDischargeRateField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-                Platform.runLater(() -> {
-                    batteryDischargeRateField.setText(oldValue);
-                    batteryDischargeRateField.positionCaret(batteryDischargeRateField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    double number = Double.parseDouble(newValue);
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        batteryDischargeRateField.setText(oldValue);
+                        batteryDischargeRateField.positionCaret(batteryDischargeRateFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                batteryDischargeRateFieldPreviousCaretPosition = batteryDischargeRateField.getCaretPosition();
             }
         });
         batteryDischargeRateField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !batteryDischargeRateField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-               batteryDischargeRateField.setText("1");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    double number = Double.parseDouble(batteryDischargeRateField.getText());
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    batteryDischargeRateField.setText("0");
+                }
+            } else {
+                batteryDischargeRateFieldPreviousCaretPosition = batteryDischargeRateField.getCaretPosition();
             }
         });
         // considered future positions label and text field
@@ -197,17 +346,44 @@ public class SimulationControl extends VBox {
         consideredPositionsField.setText("5");
         // verify value on text change
         consideredPositionsField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([1-9][0-9]{0,2}|1000)$")) {
-                Platform.runLater(() -> {
-                    consideredPositionsField.setText(oldValue);
-                    consideredPositionsField.positionCaret(consideredPositionsField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    int number = Integer.parseInt(newValue);
+                    if (number < 1 || number > 1000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        consideredPositionsField.setText(oldValue);
+                        consideredPositionsField.positionCaret(consideredPositionsFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                consideredPositionsFieldPreviousCaretPosition = consideredPositionsField.getCaretPosition();
             }
         });
         // verify format on loss of focus
         consideredPositionsField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !consideredPositionsField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
-                consideredPositionsField.setText("5");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    int number = Integer.parseInt(consideredPositionsField.getText());
+                    if (number < 1 || number > 1000) {
+                        valid = false;
+                    }
+                } catch (Exception e){
+                    valid = false;
+                }
+                if (!valid) {
+                    consideredPositionsField.setText("5");
+                }
+            } else {
+                consideredPositionsFieldPreviousCaretPosition = consideredPositionsField.getCaretPosition();
             }
         });
         // pheromone decay rate label and text field
@@ -217,19 +393,44 @@ public class SimulationControl extends VBox {
         pheromoneDecayField.setFont(fieldFont);
         pheromoneDecayField.setMaxWidth(600);
         pheromoneDecayField.setText("0");
-        // verify value on change
         pheromoneDecayField.textProperty().addListener((ObservableValue< ? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.isEmpty() && !newValue.matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-                Platform.runLater(() -> {
-                    pheromoneDecayField.setText(oldValue);
-                    pheromoneDecayField.positionCaret(pheromoneDecayField.getLength());
-                });
+            boolean valid = true;
+            if (!newValue.isEmpty()) {
+                try {
+                    double number = Double.parseDouble(newValue);
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    Platform.runLater(() -> {
+                        pheromoneDecayField.setText(oldValue);
+                        pheromoneDecayField.positionCaret(pheromoneDecayFieldPreviousCaretPosition);
+                    });
+                }
+            }
+            if (valid) {
+                pheromoneDecayFieldPreviousCaretPosition = pheromoneDecayField.getCaretPosition();
             }
         });
-        // verify format on loss of focus
         pheromoneDecayField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue && !pheromoneDecayField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-                pheromoneDecayField.setText("0");
+            if (!newValue) {
+                boolean valid = true;
+                try {
+                    double number = Double.parseDouble(pheromoneDecayField.getText());
+                    if (number < 0 || number > 100) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
+                if (!valid) {
+                    pheromoneDecayField.setText("0");
+                }
+            } else {
+                pheromoneDecayFieldPreviousCaretPosition = pheromoneDecayField.getCaretPosition();
             }
         });
         // button to start the simulation
@@ -275,25 +476,88 @@ public class SimulationControl extends VBox {
         Simulation sim = Simulation.getInstance();
         this.isHome = false;
         // verify the set parameters and set them to default values if they are incorrect
-        if (!countField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
+        boolean valid = true;
+        try {
+            int number = Integer.parseInt(countField.getText());
+            if (number < 1 || number > 1000) {
+                valid = false;
+            }
+        } catch (Exception e) {
+            valid = false;
+        }
+        if (!valid) {
             countField.setText("1");
         }
-        if (!commRangeField.getText().matches("^([1-9][0-9]?|100)$")) {
+        valid = true;
+        try {
+            int number = Integer.parseInt(commRangeField.getText());
+            if (number < 1 || number > 1000) {
+                valid = false;
+            }
+        } catch (Exception e){
+            valid = false;
+        }
+        if (!valid) {
             commRangeField.setText("1");
         }
-        if (!failureChanceField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+        valid = true;
+        try {
+            double number = Double.parseDouble(failureChanceField.getText());
+            if (number < 0 || number > 100) {
+                valid = false;
+            }
+        } catch (Exception e) {
+            valid = false;
+        }
+        if (!valid) {
             failureChanceField.setText("0");
         }
-        if (!speedField.getText().matches("^([0-9][,.][0-9]{0,15})|10$")) {
+        valid = true;
+        try {
+            double number = Double.parseDouble(speedField.getText());
+            if (number <= 0 || number > 10) {
+                valid = false;
+            }
+        } catch (Exception e) {
+            valid = false;
+        }
+        if (!valid) {
             speedField.setText("1");
         }
-        if (!batteryDischargeRateField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
-            batteryDischargeRateField.setText("1");
+        valid = true;
+        try {
+            double number = Double.parseDouble(batteryDischargeRateField.getText());
+            if (number < 0 || number > 100) {
+                valid = false;
+            }
+        } catch (Exception e) {
+            valid = false;
         }
-        if (!consideredPositionsField.getText().matches("^([1-9][0-9]{0,2}|1000)$")) {
+        if (!valid) {
+            batteryDischargeRateField.setText("0");
+        }
+        valid = true;
+        try {
+            int number = Integer.parseInt(consideredPositionsField.getText());
+            if (number < 1 || number > 1000) {
+                valid = false;
+            }
+        } catch (Exception e){
+            valid = false;
+        }
+        if (!valid) {
             consideredPositionsField.setText("5");
         }
-        if (!pheromoneDecayField.getText().matches("^([0-9]{1,2}([,.]?|([,.][0-9]{1,2})))|100$")) {
+        valid = true;
+        try {
+            double number = Double.parseDouble(pheromoneDecayField.getText());
+            if (number < 0 || number > 100) {
+                valid = false;
+            }
+        } catch (Exception e) {
+            valid = false;
+        }
+        if (!valid) {
             pheromoneDecayField.setText("0");
         }
         // set the simulation parameters
@@ -313,7 +577,7 @@ public class SimulationControl extends VBox {
             this.getChildren().addAll(parameterTitle, countLabel, countField, commRangeLabel, commRangeField, failureChanceLabel, failureChanceField, speedLabel, speedField, batteryDischargeRateLabel, batteryDischargeRateField, consideredPositionsLabel, consideredPositionsField, pheromoneDecayLabel, pheromoneDecayField, startButton, quitButton);
         } else {
             DecimalFormat doubleFormat = new DecimalFormat("0.#");
-            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d\nPheromone decay rate: %s%%", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions(), doubleFormat.format(sim.getPheromoneDecayRate())));
+            simulationParameters.setText(String.format("Robot count: %d\nCommunication range: %d\nFailure chance: %s%%\nRobot speed: %s\nBattery discharge rate: %s%%\nConsidered future positions: %d\nPheromone decay rate: %s%%\nShow pheromones of: \n", sim.getCount(), sim.getCommRange(), doubleFormat.format(sim.getFailureChance()), doubleFormat.format(sim.getSpeed()), doubleFormat.format(sim.getBatteryDischargeRate()), sim.getConsideredPositions(), doubleFormat.format(sim.getPheromoneDecayRate())));
             showTrailCheckboxes.setCheckboxCount(sim.getCount());
             this.getChildren().addAll(simulationTitle, simulationParametersLabel, simulationParameters, showTrailCheckboxes, pausePlayButton, quitButton);
             // select the pause/play button by default
