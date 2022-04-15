@@ -179,7 +179,7 @@ public class SimulationControl extends VBox {
                 boolean valid = true;
                 try {
                     int number = Integer.parseInt(commRangeField.getText());
-                    if (number < 1 || number > 1000) {
+                    if (number < 1 || number > 10000) {
                         valid = false;
                     }
                 } catch (Exception e){
@@ -491,7 +491,7 @@ public class SimulationControl extends VBox {
         valid = true;
         try {
             int number = Integer.parseInt(commRangeField.getText());
-            if (number < 1 || number > 1000) {
+            if (number < 1 || number > 10000) {
                 valid = false;
             }
         } catch (Exception e){
