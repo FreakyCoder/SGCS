@@ -19,6 +19,12 @@ public class Pheromone {
         this.strength = 1;
         this.decayRate = decayRate;
     }
+    public Pheromone(double x, double y, double strength, double decayRate) {
+        this.x = x;
+        this.y = y;
+        this.strength = strength;
+        this.decayRate = decayRate;
+    }
     // getters
     public double getX() {
         return x;
@@ -39,7 +45,7 @@ public class Pheromone {
         ctx.fillOval(x, y, 5, 5);
     }
     // allow the pheromone to be copied when two robots communicate
-    public Pheromone copy() { return new Pheromone(x, y, decayRate); }
+    public Pheromone copy() { return new Pheromone(x, y, strength, decayRate); }
     // override equals method to prevent duplicates in set
     @Override
     public boolean equals(Object o) {
