@@ -1,0 +1,22 @@
+\documentclass[12pt]{article}
+\usepackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\author{Kaloyan Dimitrov}
+
+\title{Swarm Guiding and Communication System(SGCS)}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+The model aims to provide a simulation of a swarm of many small robots surveying for an area by imitating ant colonial behavior. Similar systems rely on continuous communication with no range limitations. SGCS provides a decision-making and information-sharing framework for microrobot swarms that only needs close-range peer-to-peer communication. Each robot makes decisions based on an incomplete virtual pheromone map that is updated on each interaction with another robot. It also doesn’t rely on global positioning systems, which has 2 main advantages: GPS might prove too inaccurate for navigation of the bots and SGCS can function even when GPS isn’t available. Moreover, the swarm is able to fulfill its task regardless of the number of failed robots. The computer simulation allows for the adjustment of the following parameters: number of robots, communication range, and failure rate.
+\end{abstract}
+\section{Introduction}
+Complex systems, most often biological systems, often exhibit what is known as emergent behavior. Emergent behavior refers to an observable behavior of a system constrained only by rules of the environment and, more importantly, the rules that each participant follows independently. Such systems are capable of collectively accomplishing tasks that no individual would be able to do alone. Moreover, some of these are able to function without expensive communication to a central station. Ant colonies are one of the most well-known examples of a system that exhibits emergent behavior, where participants in the system can exchange information outside of the central hub(nest). They are capable of task allocation - deciding between nest maintenance, foraging, and patrolling using only environmental and social cues with no central authority \parencite{gordon_organization_1996}. Furthermore, the way an ant colony performs each of these tasks is also demonstrative of emergent behavior. Once again there is no apparent coordination between individual ants, yet they are collectively able to achieve their goal.
+Emergent behavior is already finding uses in technology. Swarm robotics is a subfield of robotics that draws inspiration from the seemingly simplistic non-intelligent creatures that are able to achieve wonders through collaboration \parencite{schranz_swarm_2020}.
+\section{Conclusion}
+SGCS aims to orchestrate a robotic swarm to survey an area by emulating ant-colonial behavior. The simple model I have come up with has little hardware and software requirements to accomplish this task. While SGCS provides individual robots with the ability to make informed decisions based on their environment, the system is still unusable. Factors such as expected movement time(based on the remaining energy in the power source) need to be considered in order to improve the decision-making process and not lose operating robots that are low on energy. In order to prevent robots from being pushed away from their starting positions, pheromone decay needs to be added and, more importantly, carefully chosen. The system also currently does not avoid robot collisions as it only takes the decision-making is only based on the distance from the origin point. Further, the system currently has no way to report information it discovers to the central hub. There are multiple suitable bioalgorithms that can be used to fulfill this task \parencite{adler_information_1992}.
+\printbibliography
+\end{document}
+
