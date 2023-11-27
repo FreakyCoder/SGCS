@@ -69,7 +69,7 @@ public class Bot {
         // delete pheromone if expired
         pheromones.removeIf(p -> p.getStrength() <= 0);
         // decide the movement direction
-        if (ticks % 120 == 0) {
+        if (ticks % 60 == 0) {
             if (!returning) {
                 double bestDesirability = Double.NaN, bestAng = 0, desirability, ang;
                 // possible future positions
@@ -77,8 +77,8 @@ public class Bot {
                     // generate random angle for direction
                     ang = 360 * rand.nextDouble();
                     // estimate coordinates of the future positions from the angle
-                    double fx = x + 120 * timeStep * speed * Math.cos(Math.toRadians(ang));
-                    double fy = y + 120 * timeStep * speed * Math.sin(Math.toRadians(ang));
+                    double fx = x + 60 * timeStep * speed * Math.cos(Math.toRadians(ang));
+                    double fy = y + 60 * timeStep * speed * Math.sin(Math.toRadians(ang));
                     // ensure that the robot has around 10% battery when it returns home
                     if ((dist(x, y, fx, fy) + dist(fx, fy, hx, hy)) / speed * batteryDischargeRate / 1000 < battery - 10) {
                         desirability = 0;
@@ -114,11 +114,11 @@ public class Bot {
             y = hy;
             return;
         }
-        if (ticks % 60 == 0) {
+        if (ticks % 30 == 0) {
             // drop new pheromone every 60 ticks
             pheromones.add(new Pheromone(x, y, sim.getPheromoneDecayRate() / 100));
         }
-        ticks = (ticks + 1) % 120;
+        ticks = (ticks + 1) % 60;
         // move the bot in the chosen direction
         x += timeStep * speed * Math.cos(Math.toRadians(currAng));
         y += timeStep * speed * Math.sin(Math.toRadians(currAng));
