@@ -1,0 +1,31 @@
+\section{Approach and Algorithm}
+SGCS uses partial virtual pheromone maps that are only updated when two participants come within communication range of each other. No direct environment modification or central control is used. This approach has the following advantages: 
+\begin{enumerate}
+\item No preparation of the site of operation is needed prior to deploying the system.
+\item No specialized hardware is needed for environment modification or detection of those modifications.
+\item Energy consumption for communication is reduced due to the low range requirements.
+\item The system is agnostic to the communication hardware, allowing adaptibility to the environment where the system is deployed. For example, RF communication could be used for aerial swarms and sonar for underwater operations.
+\item No single point of failure exists as failure of any individual participant does not effect the others.
+\end{enumerate}
+The algorithm consists of repeatedly peforming the following steps:
+	\begin{enumerate}
+		\item For each pheromone, decrease its strength, according to its decay rate, and destroy it if it has completely decayed. 
+		\item Every $N$ interations, decide on a direction by picking $n$ random directions and for the $k$-th($0\le k<n$) direction calculating a desirability rating $d_k$:
+		\begin{enumerate}
+			\item Calculate future position $\vec{r_k}=\vec{r} + \vec{\Delta r}$, where $\vec{r}$ is the current position and $\vec{\Delta r}$ is the possible future translation($|\vec{\Delta r}|=N v \Delta t$). $\Delta t$ is the average time between iterations and $v$ is the average speed of the robot. 
+			\item If $\frac{|\vec{r_k}|}{v} r_{bdcg} < B\%-10\%$(B\% is the battery level), $d_k=0$ because the robot cannot return home with $10\%$ safety margin.
+			\item Otherwise, with a virtual pheromone map of $m$ pheromones $$d_k = \sum_{i=1}^m {a_i|\vec{r_k}-\vec{r_{i}}|}$$ $a_i$ is the strength of the $i$-th pheromone and $\vec{r_{i}}$ is its position.
+		\end{enumerate}
+	\item Pick the direction with the highest $d_k$, or if $d_k=0$ $\forall k \in [1;n]$, pick the direction to return to the starting position.
+	\end{enumerate}
+A simulation with Python is developed to assess the performance of SGCS. The following parameters can be adjusted at the start: number of robots($n_r$), communication range($s_{comm}$), individual malfunction chance of each robot($P(F)$), speed($v$), battery discharge rate($r_{bdcg}$), and pheromone decay rate($r_{pdcy}$). 
+The simulation performs the following steps:
+\begin{enumerate}
+	\item For each robot, randomly decide whether to destroy it, based on $P(F)$. 
+	\item Simulate the draining of the battery of each robot.
+	\item Destroy every robot whose battery is fully drained.
+	\item Execute the main algorithm for each robot.
+	\item The distance between each pair of individuals $s_{ij}$ is calculated and compared with the communication range $s_{comm}$. If $s_{ij}<s_{comm}$, the pair synchronizes their virtual pheromone maps to simulate communication with limited range.
+\end{enumerate}
+\par The algorithm, if implemented in practice, has a complexity of $O(n^2)$ with respect to the number of considered future positions and the number of pheromones on the virtual map of the robot. The simulation has a complexity of $O(n^3)$ as the above steps need to be performed for each robot.
+

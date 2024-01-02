@@ -1,101 +1,66 @@
-\documentclass[a4paper, 12pt, times]{article}
+\documentclass[a4paper, 11pt]{article}
 \usepackage[style=ieee, backend=biber]{biblatex}
-\usepackage[a4paper, margin=1in]{geometry}
+\usepackage[tmargin=0.49in, bmargin=1.81in, lmargin=1.56in, rmargin=1.56in]{geometry}
+\usepackage{titlesec}
 \usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{multicol}
 \addbibresource{references.bib}
 \setlist[enumerate]{label*=\arabic*.}
 \newcommand{\todo}[1]{\textcolor{orange}{TODO: #1}}
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+\begin{flushleft}
+  \Large\@title \par
+  \large \textit{\@author}
+\end{flushleft}\egroup
+}
+\makeatother
 
-\author{Kaloyan Dimitrov\\Vladimir Hristov}
+\makeatletter
+\def\abstract{\noindent\it\textbf{\abstractname:}}
+\makeatother
 
-\title{Swarm Guiding and Communication System(SGCS)}
-\date{\today}
+\makeatletter
+\def\keywords{\noindent\it\textbf{Keywords:}}
+\makeatother
+
+\titleformat{\section}
+  {\normalfont\large}{\thesection.}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large}{\thesubsection.}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\large}{\thesubsubsection.}{1em}{}
+\setlength{\parindent}{0pt}
+
+\title{Robustness of incomplete virtual pheromone maps for stigmergic collective exploration by large swarms}
+\author{
+Kaloyan Dimitrov$^{1}$, Vladimir Hristov$^{2}$\\
+\begin{footnotesize}
+$^{1}$American College of Sofia\\
+$^{2}$Technical University of Sofia, dept. Automation of electric drive, faculty of Automatics\\
+Emails: $^{1}$k.dimitrov25@acsbg.org $^{2}$vdhristov@tu-sofia.bg
+\end{footnotesize}
+}
+\date{}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-SGCS is a decision-making and information-sharing framework for robot swarms that only needs close-range peer-to-peer communication and no centralized control. Each robot makes decisions based on an incomplete virtual pheromone map that is updated on each interaction with another robot, imitating ant colonial behavior. Similar systems rely on continuous communication with no range limitations, environment modification, or centralized control. A computer simulation is developed to assess the effectiveness and robustness of the framework in covering an area, according to the following parameters: number of robots, communication range, individual malfunction chance of each robot, speed, battery discharge rate, and pheromone decay rate. \todo{Include results}
+Swarm Guiding and Communication System(SGCS) is a decision-making and information-sharing framework for robot swarms that only needs close-range peer-to-peer communication and no centralized control. Each robot makes decisions based on an incomplete virtual pheromone map that is updated on each interaction with another robot, imitating ant colonial behavior. Similar systems rely on continuous communication with no range limitations, environment modification, or centralized control. A computer simulation is developed to assess the effectiveness and robustness of the framework in covering an area, according to the following parameters: number of robots, communication range, individual malfunction chance of each robot, speed, battery discharge rate, and pheromone decay rate. \todo{Include results}
 \end{abstract}
-\begin{multicols}{2}
-\section{Introduction}
-Complex systems, most often biological systems, often exhibit what is known as emergent behavior. Emergent behavior refers to an observable behavior of a system constrained only by rules of the environment(environmental conditions) and, more importantly, the rules that each participant follows independently. Such systems are capable of collectively accomplishing tasks that no individual would be able to do alone. Moreover, some of these are able to function without expensive communication to a central station. Expensive could refer to time or another resource like energy \parencite{marsh_demystification_2009}. Ant colonies are one of the most well-known examples of a system that exhibits emergent behavior, where participants in the system can exchange information outside of the central hub(nest). They are capable of task allocation - deciding between nest maintenance, foraging, and patrolling using only environmental and social cues with no central authority \parencite{gordon_organization_1996}. Furthermore, the way an ant colony performs each of these tasks is also demonstrative of emergent behavior. Once again there is no apparent coordination between individual ants, yet they are collectively able to achieve their goal.
-\par The concept of emergent behavior is already finding uses in technology. For instance, swarm robotics is a subfield of robotics that draws inspiration from seemingly simplistic non-intelligent creatures that are able to achieve wonders through collaboration \parencite{schranz_swarm_2020}.
-\section{Background}
-\par Swarm organization systems that do not rely on emergent behavior do exist. For instance, \textit{Karma} utilizes a beehive model, where participants with very simple software and hardware are governed by a central computer. Only when an individual is attached to the central "hive" does communication occur between the two. Hence, expensive and energy-demanding communication hardware is avoided. \todo{Include cost scaling for swarms.}This, however, limits the in-field adaptibility of the collective. Furthermore, a centralized "hive" is a single point of failure, reducing robustness even if the system is tolerant to individual failures.
-\par Stigmergy is a form of indirect communication through the modification of the environment, through which emergent behavior can be achieved. In essence, modifications of the environment made by an individual can be detected by other participants to obtain information. French zoologist Pierre-Paul Grass\'e introduces the concept in 1959 to explain how the observed coordination of insects' activities emerges from independent actions of the individual \parencite{theraulaz_brief_1999}.
-\par Two main types of stigmergy have been identified. Quantitative stigmergy refers to the use of a single type of stimuli and its quantity affects the response probability of the individual. Qualitative stigmergy, on the other hand, refers to stimuli that vary in type and can thus provoke a set of actions by the individual, depending on both the type and quantity of sensed stimuli \parencite{theraulaz_brief_1999}.
-\par Trail pheromones, a form of stigmergy, are used by a variety of species in nature such as some ants and bees. When an individual discovers a resource, they lay a trail of pheromones while returning to the nest or hive. Other individual can then follow those trails to reach the resource \parencite{carde_encyclopedia_2009}. This is especially practical when the retrieval of said resource cannot be performed by the individual alone due to its size, for example. Furthermore, information can be encoded in the pheromone trail. Resource quantity or proximity can be indicated by an intensification of the trail \parencite{carde_encyclopedia_2009}. Hence, a pheromone map is created around the colony's nest, which is used by patrollers and foragers for navigation.
-\par An application of this concept in the field of robotics is \textit{Phormica}. Each robot has the ability to project UV light on photochromic material, and thus leave artificial pheromones, which can then be detected by other individuals of the swarm \parencite{salman_phormica_2020}. However, this environmental modification relies on a controlled environment, limiting its pratical applications.\todo{Add other examples of stigmergy in robotics \parencite{hunt_testing_2019}}
-\section{Implementation}
-SGCS uses partial virtual pheromone maps that are only updated when two participants come within communication range of each other. No direct environment modification or central control is used. This approach has the following advantages: 
-\begin{enumerate}
-\item No preparation of the site of operation is needed prior to deploying the system.
-\item No specialized hardware is needed for environment modification or detection of those modifications.
-\item Energy consumption for communication is reduced due to the low range requirements.
-\item The system is agnostic to the communication hardware, allowing adaptibility to the environment where the system is deployed. For example, RF communication could be used for aerial swarms and sonar for underwater operations.
-\item No single point of failure exists as failure of any individual participant does not effect the others.
-\end{enumerate}
-The algorithm consists of repeatedly peforming the following steps:
-	\begin{enumerate}
-		\item For each pheromone, decrease its strength, according to its decay rate, and destroy it if it has completely decayed. 
-		\item Every $N$ interations, decide on a direction by picking $n$ random directions and for the $k$-th($0\le k<n$) direction calculating a desirability rating $d_k$:
-		\begin{enumerate}
-			\item Calculate future position $\vec{r_k}=\vec{r} + \vec{\Delta r}$, where $\vec{r}$ is the current position and $\vec{\Delta r}$ is the possible future translation($|\vec{\Delta r}|=N \times \Delta t \times v$). $\Delta t$ is the average time between iterations and $v$ is the average speed of the robot. 
-			\item If $\frac{|\vec{r_k}|}{v} \times r_{bdcg} < B\%-10\%$(B\% is the battery level), $d_k=0$ because the robot cannot return home with $10\%$ safety margin.
-			\item Otherwise, with a virtual pheromone map of m pheromones $$d_k = \sum_{i=1}^m {a_i|\vec{r_k}-\vec{r_{i}}|}$$ $a_i$ is the strength of the $i$-th pheromone and $\vec{r_{i}}$ is its position.
-		\end{enumerate}
-	\item Pick the direction with the highest $d_k$, or if $d_k=0$ $\forall k \in [1;n]$, pick the direction to return to the starting position.
-	\end{enumerate}
-A simulation with Java and JavaFX is developed to assess the performance of SGCS. The following parameters can be adjusted at the start: number of robots($n_r$), communication range($s_{comm}$), individual malfunction chance of each robot($P(F)$), speed($v$), battery discharge rate($r_{bdcg}$), and pheromone decay rate($r_{pdcy}$). 
-The simulation performs the following steps:
-\begin{enumerate}
-	\item For each robot, randomly decide whether to destroy it, based on $P(F)$. 
-	\item Simulate the draining of the battery of each robot.
-	\item Destroy every robot whose battery is fully drained.
-	\item Execute the main algorithm for each robot.
-	\item The distance between each pair of individuals $s_{ij}$ is calculated and compared with the communication range $s_{comm}$. If $s_{ij}<s_{comm}$, the pair synchronizes their virtual pheromone maps to simulate communication with limited range.
-\end{enumerate}
-\par The algorithm, if implemented in practice, has a complexity of $O(n^2)$ with respect to the number of considered future positions and the number of pheromones on the virtual map of the robot. The simulation has a complexity of $O(n^3)$ as the above steps need to be performed for each robot.
-\section{Simulation Results}
-\section{Analysis}
-\section{Applications}
-\label{subsec:applications}
-A swarm of robots has a variety of uses.
-\par One of the main intended applications is in agriculture. As the bee population is dwindling, such MAV(Micro-aerial vehicle) swarms can prove a suitable replacement and help with sustainability. Moreover, closed-space hydroponics and aeroponics systems currently rely on manual pollination - a task that can be automated with MAV swarms. 
-\par Some plant species need to be pollinated in bursts due to their short bloom period. Currently, this is achieved by moving bee hives to the desired location, but this could also be achieved with a robotic swarm. All this shows the substantial improvements to agriculture that such a system could bring.
-\par Artificial swarms can also be incredibly useful in search-and-rescue scenarios. Having a fault-tolerant system that quickly covers a wide area, even in difficult conditions, could be the difference between life and death.   
-\par A robotic swarm could be used to sweep a battlefield and discover unexploded mines and bombs. This greatly reduces the death-risk of teams that dispose of unexploded ordnance.
-\par Identifying radiation, chemical, and biological hazards is another dangerous task that could be effectively performed by artificial swarms. If employed, such a system could protect the health and lives of professionals in the field. 
-\par Another possible application is security. A swarm of unpredictably moving tiny robots eliminates blind spots of stationary cameras. This can in turn greatly aid law enforcement and justice. 
-\par Exploration of hard-to-reach areas is another task well-suited to artificial swarms.
-\par Such a swarm could be used to track migrations of all kinds of animals, regardless of the conditions of their habitat. It could also be used to track and reduce water pollution.
-\par Moreover, it could be used to find and track endangered species, helping with their preservation. Finally, lost farm animals can also be located with such a system. 
-\par The simulation in particular could help determine optimal parameters for the system when used in practice.  
-\section{Future Improvements} 
-\subsection{Algorithm}
-The algorithm currently uses a constant speed. Varying the speed of the robot depending on some factors could lead to an increase in efficiency while reducing power consumption. 
-\par No constraints are imposed on the changing of direction by the robots, i.e. the algorithm relies on the robots being able to instantaneously change direction in any desired way, which is impossible in practice. The algorithm should factor in the maneuverability of the robots.
-\par Currently each robot only performs observations and data-collection. Working on a task like pollination(See \ref{subsec:applications}), would require a modification of the algorithm that allows the robot to stay in place for some duration to perform the task, for example.
-\par Only repulsive pheromones are used as of now. However, attractive pheromones could be implemented to foster collaboration when performing tasks, similar to what is observed in nature \parencite{david_morgan_trail_2009}. Hence, although currently quantitative stigmergy is implemented, qualitative could be as well.
-\par Data collection and distribution throughout the network is not considered here. Ant colonial behavior in nature can possibly again be used to fulfill this task \parencite{adler_information_1992}.
-\par The algoirthm currently does not avoid collisions between two participants, which is vital for practical applications.
-\subsection{Simulation}
-The simulation is currently only 2D, and can thus only simulate ground swarms. However, as explained in \ref{subsec:applications}, SGCS could be particularly useful for aerial or underwater swarms. Hence, a 3D simulation would be needed to assess the feasibility of those use cases.
-\par No obstacles are currently present in the simulation. The additiona of obstacles would provide a more realistic environment for testing of the algorithm.
-\par The simulation of communication is also oversimplified. It is instantaneous and fully reliable if the pair of robots are within range of each other or is completely absent otherwise. Using a more unreliable and thus realistic model for communication simulation would allow to better assess the algorithm practical feasibility. Additionally, making obstacles affect the communication would be a further improvement.
-\subsection{Hardware Implementation}
-The system has not yet been deployed on real hardware. For a swarm of robots to be able to make use of SGCS, each individual must meet the following requirements:
-\begin{enumerate}
-	\item Processing capabilities are needed for execution of the above outlined algorithm. Little processing power is needed due to the simplicity of the algorithm. 
-	\item Memory capabilities are necessary record the virtual pheromone map.
-	\item Positioning is needed to place pheromones on the virtual pheromone map as well as to compare the robot's current position with the recorded pheromones.
-	\item Peer-to-peer communication is required to allow for synchronization of virtual pheromone maps between participants. Low-power short-range communication is sufficient.\todo{Reference simulation results}
-\end{enumerate}
-\todo{Existing robots that can make use of SGCS}
+\begin{keywords}
+swarm, surveillance, pheromones, robot
+\end{keywords}
+\input{Introduction.tex}
+\input{Background.tex}
+\input{Applications.tex}
+\input{Approach and Algorithm.tex}
+\input{Simulation.tex}
+\input{Results and Analysis.tex}
+\input{Future Improvements.tex}
 \section{Conclusion}
-SGCS aims to orchestrate a robotic swarm to survey an area by emulating ant colonial behavior. The algorithm has little hardware requirements to accomplish this task due to the simplicity of the software. A simulation is developed to assess effectiveness and robustness. Results are presented and analyzed. However, the system is still untested on real hardware. A multitude of possible future improvements are presented. \end{multicols}
+SGCS aims to orchestrate a robotic swarm to survey an area by emulating ant colonial behavior. The algorithm has little hardware requirements to accomplish this task due to the simplicity of the software. A simulation is developed to assess effectiveness and robustness. Results are presented and analyzed. However, the system is still untested on real hardware. A multitude of possible future improvements are presented. 
 \printbibliography
 \end{document}
 

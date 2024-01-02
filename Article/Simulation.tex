@@ -1,0 +1,10 @@
+\section{Simulation}
+A 2D simulation is developed to assess the performance of SGCS and specifically its robustness. The following parameters can be set at the start: simulation steps($T$), area width($W$) and height($H$), sensor range($s_{sens}$), number of robots($n_r$), communication range($s_{comm}$), individual malfunction chance of each robot($P(F)$), speed($v$), and pheromone decay rate($r_{pdcy}$). 
+The simulation performs the following steps:
+\begin{enumerate}
+	\item For each robot, randomly decide whether to destroy it, based on $P(F)$. 
+	\item Simulate the draining of the battery of each robot.
+	\item Destroy every robot whose battery is fully drained.
+	\item Execute the main algorithm for each robot.
+	\item The distance between each pair of individuals $s_{ij}$ is calculated and compared with the communication range $s_{comm}$. If $s_{ij}<s_{comm}$, the pair synchronizes their virtual pheromone maps to simulate communication with limited range.
+\end{enumerate}
