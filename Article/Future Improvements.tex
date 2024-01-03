@@ -1,7 +1,7 @@
 \section{Future Improvements} 
 \subsection{Algorithm}
 The algorithm currently uses a constant speed. Varying the speed of the robot depending on some factors could lead to an increase in efficiency while reducing power consumption. 
-\par No constraints are imposed on the change of direction by the robots, i.e. the algorithm relies on the robots being able to instantaneously change direction in any desired way, which is impossible in practice. The algorithm should factor in the maneuverability of the robots.
+\par No constraints are imposed on the change of direction by the robots, i.e. the algorithm relies on the robots being able to instantaneously change direction up to $90^{\circ}$, which is impossible in practice. The algorithm should factor in the maneuverability of the robots.
 \par Currently each robot only performs observations and data-collection. Working on a task like pollination(See Section \ref{subsec:applications}), would require a modification of the algorithm that allows the robot to stay in place for some duration to perform the task, for example.
 \par Only repulsive pheromones are used as of now. However, attractive pheromones could be implemented to foster collaboration when performing tasks, similar to what is observed in nature as noted in \parencite{david_morgan_trail_2009}. Hence, although currently quantitative stigmergy is implemented, qualitative could be as well.
 \par Data collection and distribution throughout the network is not considered here. Ant colonial behavior in nature could possibly be used to fulfill this task similar to \parencite{adler_information_1992}.
@@ -11,11 +11,13 @@ The simulation is currently only 2D, and can thus only simulate ground swarms. H
 \par No obstacles are currently present in the simulation. The addition of obstacles would provide a more realistic environment for testing of the algorithm.
 \par The simulation of communication is also oversimplified. It is instantaneous and fully reliable if the pair of robots are within range of each other or is completely absent otherwise. Using a more unreliable and thus realistic model for communication simulation would allow to better assess the algorithm's practical feasibility. Additionally, making obstacles affect the communication would be a further improvement.
 \subsection{Hardware Implementation}
+\label{subsec:hwreq}
 The system has not yet been deployed on real hardware. For a swarm of robots to be able to make use of SGCS, each individual must meet the following requirements:
 \begin{enumerate}
 	\item Processing capabilities are needed for execution of the above outlined algorithm. Little processing power is needed due to the simplicity of the algorithm. 
-	\item Memory capabilities are necessary record the virtual pheromone map.
+	\item Memory capabilities are necessary to record the virtual pheromone map.
 	\item Positioning is needed to place pheromones on the virtual pheromone map as well as to compare the robot's current position with the recorded pheromones.
-	\item Peer-to-peer communication is required to allow for synchronization of virtual pheromone maps between participants. Short-range communication is sufficient.\todo{Reference simulation results}
+	\item Peer-to-peer communication is required to allow for synchronization of virtual pheromone maps between participants. Short-range communication is sufficient (See Section \ref{sec:sim}). The effect of communication range on performance is not explored in this work and needs to be investigated further. 
 \end{enumerate}
-\par A number of research platforms for testing swarm robotics algorithms are reviewd in \parencite{schranz_swarm_2020}, most of which are suitable for SGCS due to the low requirements outlined above. Moreover, SGCS was initially inspired by the development of the RoboBee, and the need for swarm coordination on a heavily restricted hardware platform such as \parencite{chen_controlled_2019}.
+\par A number of research platforms for testing swarm robotics algorithms are reviewd in \parencite{schranz_swarm_2020}, most of which are suitable for SGCS due to the low requirements outlined above. Testing on a hardware platform would provide a more accurate measure of the algorithms efficiency, robustness, and scalability. Moreover, SGCS was initially inspired by the development of the RoboBee, and the need for swarm coordination on a heavily restricted hardware platform such as \parencite{chen_controlled_2019}. As such, it is our goal to one day have SGCS perform practical tasks on real hardware.
+

@@ -11,6 +11,7 @@
 *.blg
 *.run.xml
 *.bbl
+*.xdv
 
 # Build tool auxiliary files
 *.fdb_latexmk

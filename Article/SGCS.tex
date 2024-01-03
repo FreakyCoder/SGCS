@@ -1,5 +1,6 @@
+%! TEX TS-program = xelatex
 \documentclass[a4paper, 11pt]{article}
-\usepackage[style=ieee, backend=biber]{biblatex}
+\usepackage[backend=biber, style=ieee]{biblatex}
 \usepackage[tmargin=0.49in, bmargin=1.81in, lmargin=1.56in, rmargin=1.56in]{geometry}
 \usepackage{titlesec}
 \usepackage{xcolor}
@@ -33,7 +34,7 @@
   {\normalfont\large}{\thesubsubsection.}{1em}{}
 \setlength{\parindent}{0pt}
 
-\title{Robustness of incomplete virtual pheromone maps for stigmergic collective exploration by large swarms}
+\title{Robustness and scalability of incomplete virtual pheromone maps for stigmergic collective exploration}
 \author{
 Kaloyan Dimitrov$^{1}$, Vladimir Hristov$^{2}$\\
 \begin{footnotesize}
@@ -50,7 +51,7 @@ Emails: $^{1}$k.dimitrov25@acsbg.org $^{2}$vdhristov@tu-sofia.bg
 Swarm Guiding and Communication System(SGCS) is a decision-making and information-sharing framework for robot swarms that only needs close-range peer-to-peer communication and no centralized control. Each robot makes decisions based on an incomplete virtual pheromone map that is updated on each interaction with another robot, imitating ant colonial behavior. Similar systems rely on continuous communication with no range limitations, environment modification, or centralized control. A computer simulation is developed to assess the effectiveness and robustness of the framework in covering an area, according to the following parameters: number of robots, communication range, individual malfunction chance of each robot, speed, battery discharge rate, and pheromone decay rate. \todo{Include results}
 \end{abstract}
 \begin{keywords}
-swarm, surveillance, pheromones, robot
+swarm, exploration, pheromones, robustness, scalability
 \end{keywords}
 \input{Introduction.tex}
 \input{Background.tex}
@@ -63,4 +64,3 @@ swarm, surveillance, pheromones, robot
 SGCS aims to orchestrate a robotic swarm to survey an area by emulating ant colonial behavior. The algorithm has little hardware requirements to accomplish this task due to the simplicity of the software. A simulation is developed to assess effectiveness and robustness. Results are presented and analyzed. However, the system is still untested on real hardware. A multitude of possible future improvements are presented. 
 \printbibliography
 \end{document}
-
