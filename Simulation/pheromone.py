@@ -1,5 +1,5 @@
 import math
-import bots50.exp1.parameters as parameters
+import bots500.exp1.parameters as parameters
 
 class Pheromone:
     def __init__(self, step, bot_id, x, y, s):

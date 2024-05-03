@@ -2,7 +2,7 @@ import random
 import numpy as np
 import math
 import copy
-import bots50.exp1.parameters as parameters
+import bots500.exp1.parameters as parameters
 import utils
 from pheromone import Pheromone
 
@@ -16,15 +16,14 @@ class Bot:
         self.pheromones = []
 
     def change_direction_random(self):
-        self.angle = random.uniform(0, math.tau)
+        self.angle = ((math.tau + self.angle + (random.random() * 2 - 1) * math.pi / 2) % math.tau)
 
     def change_direction_biased(self):
         choices = []
         weights = []
         while len(choices) < parameters.CONSIDERED_POSITIONS:
-            a1 = (math.tau + self.angle - math.pi / 2) % math.tau
-            a2 = (math.tau + self.angle + math.pi / 2) % math.tau 
-            choices.append(random.uniform(0, math.tau))
+            theta = ((math.tau + self.angle + (random.random() * 2 - 1) * math.pi / 2) % math.tau)
+            choices.append(theta)
             weights.append(1)
         for p in self.pheromones + [Pheromone(None, self.id, self.x, parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, self.x, -parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, -parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH)]:
             d = utils.dist(self.x, self.y, p.x, p.y)
@@ -33,7 +32,9 @@ class Bot:
                 if ang < 0:
                     ang += math.tau
                 for i, ch in enumerate(choices):
-                    weights[i] += p.strength / d * min(abs(ang - ch), math.tau - abs(ang - ch))
+                    weights[i] += p.strength / (d * d) * (math.pi - abs(abs(ang - ch) - math.pi))
+        if (math.pi - abs(abs(choices[np.argmax(weights)] - self.angle) - math.pi)) > math.pi / 2:
+            print(math.degrees(math.pi - abs(abs(choices[np.argmax(weights)] - self.angle) - math.pi)), math.degrees(self.angle), np.degrees(choices))
         self.angle = choices[np.argmax(weights)]
     def change_direction_biased2(self):
         if self.pheromones:

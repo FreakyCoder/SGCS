@@ -3,8 +3,9 @@ import threading
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from bot import Bot
-import bots50.exp1.parameters as parameters
 import utils 
+import bots500.exp1.parameters as parameters
+PREFIX = 'bots500/exp1'
 
 plt.gca().set_xlim([-parameters.WIDTH / 2, parameters.WIDTH / 2])
 plt.gca().set_ylim([-parameters.HEIGHT / 2, parameters.HEIGHT / 2])
@@ -29,13 +30,15 @@ class Simulation:
 
     def tick(self, trial, frame, bots, random):
         for (i, bot) in enumerate(bots):
-            bot.update_pheromones(frame)
+            if not random:
+                bot.update_pheromones(frame)
             bot.move(frame, random)
-            for j in range(i):
-                bot2 = bots[j]
-                if utils.dist(bot.x, bot.y, bot2.x, bot2.y) <= parameters.COMM_RANGE:
-                    bot.add_pheromones(bot2.pheromones)
-                    bot2.add_pheromones(bot.pheromones)
+            if not random:
+                for j in range(i):
+                    bot2 = bots[j]
+                    if utils.dist(bot.x, bot.y, bot2.x, bot2.y) <= parameters.COMM_RANGE:
+                        bot.add_pheromones(bot2.pheromones)
+                        bot2.add_pheromones(bot.pheromones)
 
             indx = int(bot.x + parameters.WIDTH // 2)
             indy = int(bot.y + parameters.HEIGHT // 2)
@@ -51,7 +54,6 @@ class Simulation:
         self.tick(self.trial, frame, self.bots, False)
         for j in range(1, parameters.BOT_COUNT + 1):
             if frame == j * (parameters.STEPS - 1) // parameters.BOT_COUNT:
-                print('test')
                 self.bots.pop()
         for (i, bot) in enumerate(self.bots):
             if self.animation:
@@ -63,6 +65,7 @@ class Simulation:
             self.pheromones_scat.set_offsets([[p.x, p.y] for p in self.bots[i].pheromones])
 
     def run_trial(self, t: int, random: bool):
+        print('Trial', t)
         bots = [Bot(i, 0, 0, parameters.SPEED) for i in range(parameters.BOT_COUNT)]
         save_visited = []
         failures = []
@@ -79,8 +82,8 @@ class Simulation:
                     bots.pop()
         alg = 'random' if random else 'biased'
         trial = t if random else t - parameters.TRIALS
-        np.save(f'bots50/exp1/{alg}/failures{trial}', failures)
-        np.save(f'bots50/exp1/{alg}/area{trial}', save_visited)
+        np.save(f'{PREFIX}/{alg}/failures{trial}', failures)
+        np.save(f'{PREFIX}/{alg}/area{trial}', save_visited)
 
 
     def run(self):
@@ -93,8 +96,8 @@ class Simulation:
                      
         for t in threads:
             t.join()
-        np.save(f'bots50/exp1/random/coverage', self.coverage[:parameters.TRIALS])
-        np.save(f'bots50/exp1/biased/coverage', self.coverage[parameters.TRIALS:])
+        np.save(f'{PREFIX}/random/coverage', self.coverage[:parameters.TRIALS])
+        np.save(f'{PREFIX}/biased/coverage', self.coverage[parameters.TRIALS:])
 
     def run_animation(self):
         self.animation = animation.FuncAnimation(
@@ -110,6 +113,6 @@ class Simulation:
             self.animation.pause()
         self.paused = not self.paused
 sim = Simulation()
-#  sim.run_animation()
-sim.run()
+sim.run_animation()
+#  sim.run()
 plt.show()

@@ -7,4 +7,5 @@ The simulation performs the following steps:
 	\item The distance between each pair of individuals $d_{ij}$ is calculated and compared with the communication range $R_{comm}$. If $d_{ij}<R_{comm}$, the pair synchronizes their virtual pheromone maps to simulate communication with limited range.
 	\item For each robot, randomly decide whether to destroy it, based on $P(F)$. 
 \end{enumerate}
-Simulations were conducted for 10, 20, 50, and 100 robots. For each, experiments were conducted with either 0\%, 0.1\%, and 1\% failure chance on each timestep or with pre-set times for a certain number of agents to fail. Simulation parameters are listed before each respective experiment.
+Simulations were conducted for 10, 20, 50, 100, and 500 robots. For each, experiments were conducted with either 0\%, 0.1\%, 1\%, and 5\% failure chance on each timestep or with pre-set times for a certain number of agents to fail.
+The same simulations were also performed for an unbiased random walk that simply picks a random future direction $\vec{e_f}$  with $\theta < 90^{\circ}$(the angular distance between $\vec{e_f}$ and the current direction $\vec{e_c}$) every $N$ steps.
