@@ -2,7 +2,9 @@ import random
 import numpy as np
 import math
 import copy
-import bots500.exp1.parameters as parameters
+import sys
+import importlib
+parameters = importlib.import_module(f'{sys.argv[1].replace('/', '.')}.parameters')
 import utils
 from pheromone import Pheromone
 
@@ -13,7 +15,7 @@ class Bot:
         self.y = y
         self.v = v
         self.angle = random.uniform(0, math.tau)
-        self.pheromones = []
+        self.pheromones = set([Pheromone(0, 0, 0, 0, parameters.PHEROMONE_STRENGTH * parameters.BOT_COUNT)])
 
     def change_direction_random(self):
         self.angle = ((math.tau + self.angle + (random.random() * 2 - 1) * math.pi / 2) % math.tau)
@@ -25,7 +27,7 @@ class Bot:
             theta = ((math.tau + self.angle + (random.random() * 2 - 1) * math.pi / 2) % math.tau)
             choices.append(theta)
             weights.append(1)
-        for p in self.pheromones + [Pheromone(None, self.id, self.x, parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, self.x, -parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, -parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH)]:
+        for p in self.pheromones.union([Pheromone(None, self.id, self.x, parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, self.x, -parameters.HEIGHT // 2, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH), Pheromone(None, self.id, -parameters.WIDTH // 2, self.y, parameters.FENCE_STRENGTH * parameters.PHEROMONE_STRENGTH)]):
             d = utils.dist(self.x, self.y, p.x, p.y)
             if not math.isclose(d, 0):
                 ang = math.atan2(p.y - self.y, p.x - self.x)
@@ -51,9 +53,11 @@ class Bot:
                 self.angle = math.atan2(-self.y, -self.x)
 
     def update_pheromones(self, frame):
-        self.pheromones = list(filter(lambda p: p.decay(frame) > 0.1, self.pheromones))
-        if frame % parameters.PHEROMONE_DROP_STEPS == 0:
-            self.pheromones.append(Pheromone(frame, self.id, self.x, self.y, parameters.PHEROMONE_STRENGTH))
+        self.pheromones = set(filter(lambda p: p.decay(frame) > 0.1, self.pheromones))
+        if frame != 0 and frame % parameters.PHEROMONE_DROP_STEPS == 0:
+            self.pheromones.add(Pheromone(frame, self.id, self.x, self.y, parameters.PHEROMONE_STRENGTH))
+    def add_pheromones2(self, new_pheromones):
+        self.pheromones.update(new_pheromones)
 
     def add_pheromones(self, new_pheromones):
         i, j, pheromones = 0, 0, []
@@ -74,13 +78,13 @@ class Bot:
                         pheromones.append(self.pheromones[i])
                         i += 1
                     else:
-                        pheromones.append(new_pheromones[j])
+                        pheromones.append(copy.deepcopy(new_pheromones[j]))
                         j += 1
         while i < len(self.pheromones):
                 pheromones.append(self.pheromones[i])
                 i += 1
         while j < len(new_pheromones):
-                pheromones.append(new_pheromones[j])
+                pheromones.append(copy.deepcopy(new_pheromones[j]))
                 j += 1
         self.pheromones = pheromones
 

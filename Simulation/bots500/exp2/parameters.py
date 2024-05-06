@@ -1,7 +1,7 @@
 import random
 # with 1% failures
-TRIALS=3
-STEPS=600
+TRIALS=5
+STEPS=1500
 WIDTH=801
 HEIGHT=801
 BOT_COUNT=500

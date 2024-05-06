@@ -13,7 +13,7 @@ ticks = [-400, -300, -200, -100, 0, 100, 200, 300, 400]
 data = np.load(f'{sys.argv[1]}/area0.npy')
 for i in range(len(data)):
     sns.heatmap(data=data[i], ax=hm[i], robust=True, square=True, cbar=False)
-    hm[i].set_title(f'Quater {i + 1}', fontdict={'fontsize': '11'})
+    hm[i].set_title(f'Quarter {i + 1}', fontdict={'fontsize': '11'})
     hm[i].set_xticks([x + 400 for x in ticks])
     hm[i].set_xticklabels(ticks)
     hm[i].set_yticks([y + 400 for y in ticks])

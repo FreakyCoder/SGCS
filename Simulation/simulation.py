@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from bot import Bot
 import utils 
-import bots500.exp1.parameters as parameters
-PREFIX = 'bots500/exp1'
+import sys
+import importlib
+parameters = importlib.import_module(f'{sys.argv[1].replace('/', '.')}.parameters')
+PREFIX = sys.argv[1]
 
 plt.gca().set_xlim([-parameters.WIDTH / 2, parameters.WIDTH / 2])
 plt.gca().set_ylim([-parameters.HEIGHT / 2, parameters.HEIGHT / 2])
@@ -37,9 +39,8 @@ class Simulation:
                 for j in range(i):
                     bot2 = bots[j]
                     if utils.dist(bot.x, bot.y, bot2.x, bot2.y) <= parameters.COMM_RANGE:
-                        bot.add_pheromones(bot2.pheromones)
-                        bot2.add_pheromones(bot.pheromones)
-
+                        bot.add_pheromones2(bot2.pheromones)
+                        bot2.add_pheromones2(bot.pheromones)
             indx = int(bot.x + parameters.WIDTH // 2)
             indy = int(bot.y + parameters.HEIGHT // 2)
             for x in range(indx - parameters.SENSOR_RANGE, indx + parameters.SENSOR_RANGE + 1):
@@ -90,14 +91,16 @@ class Simulation:
         self.visited = np.full((2 * parameters.TRIALS, parameters.WIDTH, parameters.HEIGHT), 0, dtype=int)
         self.visited_count = np.full((2 * parameters.TRIALS), 0, dtype=int)
         threads = []
-        for t in range(2 * parameters.TRIALS):
-            threads.append(threading.Thread(target=self.run_trial, args=(t,t<parameters.TRIALS))) 
+        for t in range(parameters.TRIALS): # 2 * parameters.TRIALS
+            threads.append(threading.Thread(target=self.run_trial, args=(t,t<parameters.TRIALS))) # t<parameters.TRIALS 
             threads[t].start()
                      
         for t in threads:
             t.join()
+        print('Saving results...')
         np.save(f'{PREFIX}/random/coverage', self.coverage[:parameters.TRIALS])
-        np.save(f'{PREFIX}/biased/coverage', self.coverage[parameters.TRIALS:])
+        #  np.save(f'{PREFIX}/biased/coverage', self.coverage[parameters.TRIALS:])
+        print('Done.')
 
     def run_animation(self):
         self.animation = animation.FuncAnimation(
@@ -113,6 +116,6 @@ class Simulation:
             self.animation.pause()
         self.paused = not self.paused
 sim = Simulation()
-sim.run_animation()
-#  sim.run()
+#  sim.run_animation()
+sim.run()
 plt.show()

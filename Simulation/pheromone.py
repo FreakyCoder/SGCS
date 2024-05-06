@@ -1,5 +1,8 @@
 import math
-import bots500.exp1.parameters as parameters
+import sys
+import importlib
+parameters = importlib.import_module(f"{sys.argv[1].replace('/', '.')}.parameters")
+
 
 class Pheromone:
     def __init__(self, step, bot_id, x, y, s):
@@ -17,5 +20,7 @@ class Pheromone:
     def __eq__(self, o):
         if self is o:
             return True
-        return self.step == o.step and self.bot_id == o.bot_id and math.isclose(self.x, o.x) and math.isclose(self.y, o.y) and math.isclose(self.strength, o.strength)
+        return self.step == o.step and self.bot_id == o.bot_id
+    def __hash__(self):
+        return hash((self.step, self.bot_id))
   

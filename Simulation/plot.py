@@ -1,11 +1,13 @@
 import sys
 import math
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import seaborn as sns
 import pandas as pd
 import importlib
+matplotlib.rc('font', family='Times New Roman') 
 
 parameters = importlib.import_module(f"{sys.argv[1].replace('/', '.')}.parameters")
 
@@ -27,8 +29,10 @@ for t, tp in enumerate(raw_random_transposed):
         s += (p - mean) * (p - mean)
         if p >= 99 and prev[i] < 99:
             random_done[i] = t
-    random_consistency += math.sqrt(s)
+    random_consistency += math.sqrt(s / len(tp))
     prev = tp
+
+random_consistency /= len(raw_random_transposed)
 
 biased_consistency = 0
 biased_done = np.empty(len(raw_biased_transposed[0]))
@@ -40,19 +44,26 @@ for t, tp in enumerate(raw_biased_transposed):
         s += (p - mean) * (p - mean)
         if p >= 99 and prev[i] < 99:
             biased_done[i] = t
-    biased_consistency += math.sqrt(s)
+    biased_consistency += math.sqrt(s / len(tp))
     prev = tp
+biased_consistency /= len(raw_biased_transposed)
 print(f'Random done: {random_done}')
 print(f'Mean: {np.mean(random_done)}')
 print(f'Biased done: {biased_done}')
 print(f'Mean: {np.mean(biased_done)}')
 print(f'Random consistency: {random_consistency}')
 print(f'Biased consistency: {biased_consistency}')
+
 legend_handles={
         'biased': Line2D([0], [0], color='orange', lw=2, label=f'Biased'), 
         'random': Line2D([0], [0], color='blue', lw=2, label=f'Random')}
 
-
+print(raw_data_biased.shape)
+if np.size(raw_data_biased, 1) < np.size(raw_data_random, 1):
+    raw_data_biased = np.pad(raw_data_biased, ((0, 0), (0, np.size(raw_data_random, 1) - np.size(raw_data_biased, 1))), 'constant', constant_values=None)
+    print(raw_data_biased.shape)
+else:
+    pass
 data = pd.DataFrame(np.transpose(np.concatenate((raw_data_biased, raw_data_random))), columns=[f'Trial {i+1} biased' for i in range(len(raw_data_biased))] + [f'Trial {i+1} random'for i in range(len(raw_data_random))])
 
 ax = sns.lineplot(data=data, palette=[legend_handles['biased'].get_color()] * len(raw_data_biased) + [legend_handles['random'].get_color()] * len(raw_data_random), dashes=False)
